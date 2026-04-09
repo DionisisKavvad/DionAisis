@@ -34,6 +34,7 @@ Skills live in `.claude/skills/`. The pattern:
 
 ### Available skills
 - **project-context-restore** — restore full context on a project Dionisis is jumping back into. Triggers on "pick up where I left off", "catch me up on X", "restore X", "/restore X". See `.claude/skills/project-context-restore/SKILL.md`.
+- **aws-investigate** — investigate AWS issues, logs, or executions in an aliased account. Resolves profile, stage, and region from `DionAi/.env` before any AWS CLI call. Triggers on "investigate <alias>", "check <alias> logs", "why did <alias> fail". See `.claude/skills/aws-investigate/SKILL.md`.
 
 ### Skills to Build (backlog)
 Empty. Add candidates here as recurring workflows emerge.
