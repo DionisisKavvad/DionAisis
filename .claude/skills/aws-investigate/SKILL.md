@@ -5,6 +5,21 @@ description: Investigate AWS issues, executions, logs, and events for one of Dio
 
 # AWS Investigate
 
+## Preferred execution: delegate to the `aws-investigator` sub-agent
+This skill should be executed through the `aws-investigator` sub-agent (`.claude/agents/aws-investigator.md`) by default. Reasons:
+
+- **Isolated context:** AWS CLI output (logs, execution histories, DynamoDB scans) is verbose and burns parent context fast. The sub-agent keeps that noise out of the main thread.
+- **Read-only safety:** the sub-agent has no Edit or Write tools, so it cannot accidentally mutate files or AWS resources during investigation.
+- **Specialized scope:** the sub-agent's system prompt is tuned specifically for this flow, no drift into unrelated work.
+- **Cost:** the sub-agent currently runs on a smaller model, which is cheaper. This may change, but the other reasons stand regardless.
+
+**Delegate the skill to the sub-agent unless one of these applies:**
+- The sub-agent already ran and reported a blocker that requires Edit/Write (e.g. missing `AWS Alias:` in a project README)
+- The request requires AWS mutation (the sub-agent cannot mutate, so the main thread must handle it with explicit confirmation from Dionisis)
+- The investigation is tightly coupled to other in-flight work in the main thread and splitting context would make things worse
+
+Otherwise, invoke the sub-agent via the Agent tool with the user's raw request as the prompt, then relay its report back to Dionisis.
+
 ## When to use this skill
 Trigger on any phrasing like:
 - "investigate <project> ..."
