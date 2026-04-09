@@ -34,7 +34,12 @@ Skills live in `.claude/skills/`. The pattern:
 
 ### Available skills
 - **project-context-restore** — restore full context on a project Dionisis is jumping back into. Triggers on "pick up where I left off", "catch me up on X", "restore X", "/restore X". See `.claude/skills/project-context-restore/SKILL.md`.
-- **aws-investigate** — investigate AWS issues, logs, or executions in an aliased account. Resolves profile, stage, and region from `DionAi/.env` before any AWS CLI call. Triggers on "investigate <alias>", "check <alias> logs", "why did <alias> fail". See `.claude/skills/aws-investigate/SKILL.md`.
+- **aws-investigate** — investigate AWS issues, logs, or executions for a project. Two-phase flow (discover from code/IaC, then run scoped AWS CLI calls). Triggers on "investigate <project|alias>", "check <project> logs", "why did <workflow> fail". See `.claude/skills/aws-investigate/SKILL.md`. **Always delegate this to the `aws-investigator` sub-agent when the investigation is self-contained (see Sub-Agents below).**
+
+## Sub-Agents
+Sub-agents live in `.claude/agents/` and run on cheaper models with narrower scope. Delegate to them whenever the work fits, to save cost and context.
+
+- **aws-investigator** — runs the `aws-investigate` skill end-to-end on Haiku. Read-only, will not mutate AWS or files. Delegate any AWS investigation request to this agent by default. Only handle it in the main thread if the sub-agent reports a blocker that needs Edit/Write access (e.g. missing alias in a README) or if the task requires mutation.
 
 ### Skills to Build (backlog)
 Empty. Add candidates here as recurring workflows emerge.
