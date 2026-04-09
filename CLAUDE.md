@@ -31,12 +31,12 @@ Skills live in `.claude/skills/`. The pattern:
 
 - Each skill is a folder: `.claude/skills/skill-name/SKILL.md`
 - Skills are built organically. When a workflow gets repeated, turn it into a skill.
-- No skills exist yet. Build them only when a real pattern emerges.
+
+### Available skills
+- **project-context-restore** — restore full context on a project Dionisis is jumping back into. Triggers on "pick up where I left off", "catch me up on X", "restore X", "/restore X". See `.claude/skills/project-context-restore/SKILL.md`.
 
 ### Skills to Build (backlog)
-Based on what Dionisis said eats up his time, these are candidates to turn into skills:
-
-- **project-context-restore** — when jumping back into a project, quickly surface: last changes made, where things were left off, what's next. This is his #1 pain point. Biggest ROI skill to build first.
+Empty. Add candidates here as recurring workflows emerge.
 
 ## Decision Log
 Meaningful decisions go in `decisions/log.md`. Append-only. Never edit or delete old entries. Format:

@@ -1,5 +1,6 @@
 # paramythas
 
+- **Code:** `/Users/dionisis/Projects/Paramythas`
 - **Description:** App in active development.
 - **Status:** Active
-- **Key date:** 2026-07-01 — development milestone target
+- **Key date:** 2026-07-01, development milestone target
