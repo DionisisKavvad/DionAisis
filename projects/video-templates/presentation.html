@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>video-templates · Status</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; background: #0a0a0f; color: #e8e8ef; overflow: hidden; }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5vh 8vw;
+    animation: fadeIn .4s ease;
+  }
+  .slide.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  .eyebrow { font-size: 0.9rem; letter-spacing: 0.25em; text-transform: uppercase; color: #7c7cff; margin-bottom: 1.2rem; }
+  h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.2rem; background: linear-gradient(135deg, #fff 0%, #9c9cff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 1.8rem; color: #fff; }
+  h3 { font-size: 1.3rem; font-weight: 600; color: #9c9cff; margin: 1.2rem 0 0.6rem; }
+  p, li { font-size: 1.25rem; line-height: 1.55; color: #c8c8d4; }
+  ul { list-style: none; }
+  li { padding: 0.5rem 0 0.5rem 1.8rem; position: relative; }
+  li::before { content: "▸"; position: absolute; left: 0; color: #7c7cff; font-weight: bold; }
+  strong { color: #fff; font-weight: 600; }
+  code { font-family: "JetBrains Mono", Menlo, monospace; background: #1a1a24; color: #9c9cff; padding: 0.15em 0.5em; border-radius: 4px; font-size: 0.92em; }
+  pre { background: #12121a; border: 1px solid #2a2a3a; border-radius: 8px; padding: 1.4rem 1.8rem; font-family: "JetBrains Mono", Menlo, monospace; font-size: 1rem; line-height: 1.7; color: #c8c8d4; overflow-x: auto; }
+  pre .arrow { color: #7c7cff; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+  th, td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #2a2a3a; }
+  th { color: #7c7cff; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; }
+  td:first-child { color: #fff; font-family: "JetBrains Mono", Menlo, monospace; font-size: 0.95rem; white-space: nowrap; }
+
+  .status-grid { display: grid; gap: 0.7rem; margin-top: 0.5rem; }
+  .status-row { display: flex; align-items: baseline; gap: 1rem; font-size: 1.2rem; }
+  .status-row .icon { font-size: 1.4rem; width: 2rem; flex-shrink: 0; }
+  .status-row.done .icon { color: #4ade80; }
+  .status-row.progress .icon { color: #fbbf24; }
+  .status-row.target .icon { color: #f87171; }
+
+  .commits li { font-family: "JetBrains Mono", Menlo, monospace; font-size: 1rem; }
+  .commits li code { background: #1a1a24; color: #fbbf24; }
+
+  .nav {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 1rem;
+    background: rgba(20, 20, 30, 0.85); backdrop-filter: blur(10px);
+    padding: 0.6rem 1.2rem; border-radius: 999px; border: 1px solid #2a2a3a;
+    z-index: 10;
+  }
+  .nav button { background: none; border: none; color: #9c9cff; font-size: 1.3rem; cursor: pointer; padding: 0.2rem 0.6rem; border-radius: 4px; transition: background .15s; }
+  .nav button:hover { background: #2a2a3a; }
+  .nav .counter { font-family: "JetBrains Mono", Menlo, monospace; font-size: 0.95rem; color: #c8c8d4; min-width: 3.5rem; text-align: center; }
+  .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #7c7cff, #9c9cff); transition: width .3s ease; z-index: 10; }
+
+  .deadline { display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.4); border-radius: 6px; color: #fca5a5; font-size: 1.1rem; font-weight: 600; }
+  .pipeline-caption { color: #7c7cff; font-size: 0.95rem; margin-top: 1rem; letter-spacing: 0.05em; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 -->
+  <section class="slide active">
+    <div class="eyebrow">Project Status · 2026-04-15</div>
+    <h1>video-templates</h1>
+    <p style="font-size:1.4rem;">Motion Canvas σύστημα για animated video templates με Angular platform integration.</p>
+    <div class="deadline">⏱ Deadline: 2026-04-30 · 15 μέρες</div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="eyebrow">The big bet</div>
+    <h2>End-to-end template cloning</h2>
+    <p style="font-size:1.5rem; max-width: 900px;">Δίνεις ένα υπάρχον video. Βγαίνει ένα νέο template, έτοιμο για render. Χωρίς να ξαναγράφεις τα boilerplate sections με το χέρι.</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="eyebrow">Goals</div>
+    <h2>3 sub-goals</h2>
+    <ul>
+      <li><strong>Map the flow</strong> — ολόκληρη η διαδρομή από video σε template, βήμα-βήμα.</li>
+      <li><strong>Capture guideline drift</strong> — όταν ο Claude Code γράφει κώδικα που δουλεύει αλλά αγνοεί conventions, μπαίνει hint ώστε την επόμενη φορά να ξέρει τον σωστό τρόπο.</li>
+      <li><strong>Time-cost analysis</strong> — ποιο βήμα τρώει τον περισσότερο χρόνο, αυτό γίνεται target για automation.</li>
+    </ul>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="eyebrow">What's built</div>
+    <h2>Pipeline ✅</h2>
+<pre>video
+  <span class="arrow">→</span> Gemini                          <span style="color:#555">// raw analysis.md</span>
+  <span class="arrow">→</span> /video-gap-analysis             <span style="color:#555">// D1–D10 report</span>
+  <span class="arrow">→</span> Q&amp;A round-trip με Gemini        <span style="color:#555">// fill Missing</span>
+  <span class="arrow">→</span> /video-analysis-to-template     <span style="color:#555">// build file</span>
+  <span class="arrow">→</span> src/template-{N}/new-project-vertical.ts
+  <span class="arrow">→</span> npm run convert template-{N} vertical dev</pre>
+    <p class="pipeline-caption">End-to-end, στημένη.</p>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="eyebrow">Tooling</div>
+    <h2>Skills shipped</h2>
+    <table>
+      <thead><tr><th>Skill</th><th>Ρόλος</th></tr></thead>
+      <tbody>
+        <tr><td>video-gap-analysis</td><td>10-dimension Confirmed/Ambiguous/Missing report + English Q's</td></tr>
+        <tr><td>video-analysis-to-template</td><td>Χτίζει το Motion Canvas template section-by-section</td></tr>
+        <tr><td>template-describe</td><td>Περιγράφει υπάρχον template</td></tr>
+        <tr><td>hint</td><td>Διαχείριση implementation-hints.md (drift capture)</td></tr>
+        <tr><td>rule</td><td>Normative MUST/SHOULD rules</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="eyebrow">Supporting assets</div>
+    <h2>Gemini prompt &amp; docs</h2>
+    <ul>
+      <li><strong>docs/video-analysis-prompt.md</strong> — 164 γραμμές, αναγκάζει το video LLM να περιγράψει scene structure, elements, entry/exit order, animation <em>techniques</em> (όχι μόνο directions), visual dependencies, palette, typography.</li>
+      <li><strong>Repo docs:</strong> PROJECT_INDEX, API_REFERENCE, COMPONENT_CATALOG, NAVIGATION_INDEX, design-rules v1.1.4, rules.md.</li>
+    </ul>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="eyebrow">Recent commits</div>
+    <h2>Πρόσφατη κίνηση</h2>
+    <ul class="commits">
+      <li><code>c935827</code> — hint skill + blur-slide animation + template-146 refinements</li>
+      <li><code>62db85f</code> — video-analysis-to-template + video-gap-analysis skills</li>
+      <li><code>89b9ef3</code> — template-describe skill</li>
+      <li><code>d0d23e9</code> — rules.md + /rule skill</li>
+    </ul>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="eyebrow">Ανοιχτά ερωτήματα</div>
+    <h2>Τι δεν ξέρεις ακόμα</h2>
+    <ul>
+      <li>Πού ακριβώς drifts ο Claude Code; κανένα καταγεγραμμένο error-mode list.</li>
+      <li>Ποιο βήμα τρώει τον περισσότερο χρόνο; μηδέν instrumentation / timing log.</li>
+      <li>Approach F handlers pattern vs legacy flat templates — drift hotspot;</li>
+      <li>Το <code>template-describe</code> χωράει στο cloning flow, ή είναι άλλο use case;</li>
+    </ul>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="eyebrow">TL;DR</div>
+    <h2>Που βρίσκεσαι</h2>
+    <div class="status-grid">
+      <div class="status-row done"><span class="icon">✅</span><span>Pipeline στημένη end-to-end</span></div>
+      <div class="status-row done"><span class="icon">✅</span><span>5 skills shipped (gap-analysis, analysis-to-template, describe, hint, rule)</span></div>
+      <div class="status-row done"><span class="icon">✅</span><span>Gemini prompt δομημένος (10 διαστάσεις)</span></div>
+      <div class="status-row progress"><span class="icon">⏳</span><span>Feedback loop για drift capture: εργαλείο υπάρχει, δεν έχει ενεργοποιηθεί συστηματικά</span></div>
+      <div class="status-row progress"><span class="icon">⏳</span><span>Μηδέν timing data, άρα δεν ξέρεις τι να αυτοματοποιήσεις</span></div>
+      <div class="status-row target"><span class="icon">🎯</span><span>15 μέρες μέχρι το deadline</span></div>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="eyebrow">Logical next moves</div>
+    <h2>Χωρίς να prescribe</h2>
+    <ul>
+      <li>Τρέξε ένα πραγματικό cloning cycle <strong>με stopwatch σε κάθε βήμα</strong>. Πρώτο timing dataset.</li>
+      <li>Μετά από κάθε drift του Claude Code, γράψε hint <strong>αμέσως</strong>, όχι μετά.</li>
+      <li>Φτιάξε ένα κατάλογο error-modes, έστω 5 bullets, για να ξέρεις τι κυνηγάς.</li>
+    </ul>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button onclick="go(-1)" aria-label="Previous">◂</button>
+  <div class="counter" id="counter">1 / 10</div>
+  <button onclick="go(1)" aria-label="Next">▸</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const progressBar = document.getElementById('progressBar');
+  let idx = 0;
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    counter.textContent = `${idx + 1} / ${slides.length}`;
+    progressBar.style.width = `${((idx + 1) / slides.length) * 100}%`;
+  }
+
+  function go(delta) {
+    idx = Math.max(0, Math.min(slides.length - 1, idx + delta));
+    render();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+    else if (e.key === 'ArrowLeft') go(-1);
+    else if (e.key === 'Home') { idx = 0; render(); }
+    else if (e.key === 'End') { idx = slides.length - 1; render(); }
+  });
+
+  render();
+</script>
+
+</body>
+</html>

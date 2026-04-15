@@ -35,11 +35,13 @@ Skills live in `.claude/skills/`. The pattern:
 ### Available skills
 - **project-context-restore** — restore full context on a project Dionisis is jumping back into. Triggers on "pick up where I left off", "catch me up on X", "restore X", "/restore X". See `.claude/skills/project-context-restore/SKILL.md`.
 - **aws-investigate** — investigate AWS issues, logs, or executions for a project. Two-phase flow (discover from code/IaC, then run scoped AWS CLI calls). Triggers on "investigate <project|alias>", "check <project> logs", "why did <workflow> fail". See `.claude/skills/aws-investigate/SKILL.md`.
+- **perplexity-research** — research any topic via the Perplexity API (web search + AI synthesis with citations). Triggers on "research X", "look up X", "find out about X", "what's the current state of X". See `.claude/skills/perplexity-research/SKILL.md`.
 
 ## Sub-Agents
 Sub-agents live in `.claude/agents/`. Each one has its own reason to exist (isolated context, specialized tools, narrower scope, different model, etc.). When a skill wants to be executed through a sub-agent, it will say so inside its own `SKILL.md`. Do not assume delegation defaults here.
 
 - **aws-investigator** — specialized read-only agent for running the `aws-investigate` skill. See `.claude/agents/aws-investigator.md` for its constraints and the skill's `SKILL.md` for when to use it.
+- **perplexity-researcher** — Haiku-powered agent for running the `perplexity-research` skill. See `.claude/agents/perplexity-researcher.md` for its constraints and the skill's `SKILL.md` for when to use it.
 
 ### Skills to Build (backlog)
 Empty. Add candidates here as recurring workflows emerge.
