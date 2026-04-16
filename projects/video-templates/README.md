@@ -48,6 +48,21 @@ video → Gemini → raw analysis.md
 
 Next steps deliberately left open: research will make them specific.
 
+## TODO
+
+### Signal animation + property animation conflict
+Review signal animations and handle the case where a signal animation and a regular property animation are both assigned as in/out on the same node and both target a common property. Currently the property animation's initial-value setter destroys the signal's reactive binding, so the signal animation silently fails (documented in H-03). Decision needed: either throw an explicit error when this conflict is detected, or find a way to compose them (if possible). Known workarounds exist (separate inner/outer nodes, combined signal utility) but no runtime guard prevents the silent failure.
+
+### Text color strategies: document and decide
+Catalog the three text color strategies that have been tried and decide the final approach:
+1. **White/Black** (original): binary pick of #ffffff or #444444 via APCA contrast. Fails on dual backgrounds.
+2. **Grayscale** (intermediate, `grayscale-solver.ts`): minimax sweep of 51 grayscale values. Better on dual backgrounds but can't use brand colors.
+3. **Palette** (current, `text-color.service.ts`): picks the best palette color via minimax APCA. Falls back to grayscale solver for complex dual-background cases.
+
+All three share the ahead-of-time problem: text color depends on rendered backgrounds, so it can't be decided before the template runs. Current workaround: reactive signals + first-fill freeze. Proposed long-term fix: build-time palette dependency map (run analysis mode during convert, pre-compute mappings, resolve at platform runtime with zero geometry).
+
+Need to document: which strategy is the final one, how the grayscale fallback interacts with the palette strategy, and whether the build-time approach is worth pursuing now or later.
+
 ## Notes
 - Full docs in repo under `docs/` (PROJECT_INDEX, API_REFERENCE, COMPONENT_CATALOG, NAVIGATION_INDEX, video-template-design-rules-v-1-1-4, rules.md).
 - Build/dev: `npm run serve`, `npm run build`.
