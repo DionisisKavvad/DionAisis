@@ -6,12 +6,70 @@
 - **Status:** Active
 - **Key date:** 2026-04-30, ship full template-cloning system
 
-## Goal
+## Goal: Template cloning system
 Build an end-to-end system that lets you create a new video template by cloning an existing one. Specifically:
 
 1. Map the flow of producing a template from an existing video.
 2. Capture guideline drift from Claude Code: when the code works but ignores project conventions or mishandles special cases, add hints so from now on it knows the right way. Hints teach conventions, they don't prevent crashes.
 3. Analyze time cost of each step, find what eats the most time, target it for automation.
+
+## Goal: Palette systematization
+
+**High-level:** Συστηματοποίηση του τρόπου που ορίζουμε τις παλέττες στα templates και καλύτεροι τρόποι να επιλέγουμε παλέττα ανά template.
+
+**Concrete target:** Για κάθε (template, palette) combination, να επιστρέφουμε το καλύτερο permutation χρωμάτων→slots, ή signal `no viable assignment` αν δεν υπάρχει καλό.
+
+**Scope:** 30 templates. Χρώματα έρχονται δυναμικά από το brief κάθε φορά.
+
+**Artifacts:** `reports/color-roles/` στο video-templates repo περιέχει:
+- `color-role-analysis.md` — M3 role theory + template-42 worked example + section 8 για το πώς τροφοδοτεί το permutation scoring
+- `template-analysis-prompt.md` — Gemini prompt για per-template M3 color role analysis
+- `color-scorer-prototype.js` — N! permutation scorer με 3-axis scoring (text / adjacency / chroma)
+
+### Phase A — LLM annotation pass (per template)
+
+1. Τρέξιμο M3 prompt σε Gemini για κάθε template με screenshot.
+2. Store JSON profiles σε: `reports/color-roles/profiles/<templateId>.json`.
+3. **Manual review:** έλεγχος κάθε profile πριν περάσει στο scorer. Το Gemini ήδη έκανε το κλασικό λάθος (`surface` σε saturated red) στο template-42.
+4. Version tag στο schema (`"schemaVersion": 1`) για future changes.
+
+Αυτοματοποιημένο validation pass είναι TODO για αργότερα — για τώρα human-in-the-loop.
+
+### Phase B — Smart color mapping
+
+Το `__primary` / `__secondary` naming στα templates δεν συμβαδίζει με M3 και δεν είναι consistent μεταξύ templates.
+
+**1. Naming inconsistency**
+Decision for now: keep naming, structural-only. Το M3 role field κάνει το semantic bridge. Re-evaluation μόνο αν προκύψουν real bugs.
+
+**2. Role-aware palette prefiltering**
+Αντί για naive N! permutation σε όλους τους συνδυασμούς:
+- `surface` slots → μόνο neutral palette colors (chroma < 0.15)
+- `primary` / `tertiary` slots → μόνο chromatic colors
+
+Μικρότερο permutation space + semantically correct rankings.
+
+### Phase C — gb library integration
+
+1. Port του scorer σε live runtime στο gb library.
+2. Ingest brief palettes → run scorer per template → apply colors μέσω του υπάρχοντος apply-palette-color layer (paletteIndex per element). Όταν αλλάζει το permutation, τα χρώματα ρέουν αυτόματα στα σωστά elements.
+3. Visual check σε όλα τα 30 templates: το output βγάζει νόημα;
+
+### Phase D — Iteration
+
+- Collect failure modes από visual review → tune rules + thresholds (`chroma(surface) < ?`, `hueDiff >= ?`).
+- Ground truth θα χτιστεί με εμπειρία — όχι formal calibration dataset upfront.
+- Expand M3 coverage αν χρειαστεί (π.χ. `secondary-container`, `outline`).
+
+### Immediate next action
+
+Phase A σε **1 template** end-to-end (template-42 είναι έτοιμο):
+1. Prompt → Gemini → JSON profile
+2. Manual review του JSON
+3. Τρέξε scorer με 3-5 palettes
+4. Manual check: βγάζει νόημα το top permutation;
+
+Αν ναι → scale σε 5 templates. Αν όχι → debug πριν scale.
 
 ## Progress (as of 2026-04-15)
 
