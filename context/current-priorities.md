@@ -1,6 +1,6 @@
 # Current Priorities
 
-**Updated:** 2026-04-15
+**Updated:** 2026-04-17
 
 ## Top Focus
 - Gather insights on all the latest AI trends and feed them into the insight engine vision
@@ -8,6 +8,7 @@
 
 ## Active Push (next ~2 months)
 - **video-templates:** ship full template-cloning system + hint/timing analysis. Target: 2026-04-30
+  - Palette systematization Phase A: v3 Gemini prompt locked (consistent M3 role output). Next: scale to 5 templates + run scorer, then apply live.
 - **youtube-insights:** organize insights better. Target: 2026-06-01
 - **paramythas:** ship development milestone. Target: 2026-07-01
 - **hero-wars:** still in planning, move toward active

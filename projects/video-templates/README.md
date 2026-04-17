@@ -29,11 +29,28 @@ Build an end-to-end system that lets you create a new video template by cloning 
 ### Phase A — LLM annotation pass (per template)
 
 1. Τρέξιμο M3 prompt σε Gemini για κάθε template με screenshot.
-2. Store JSON profiles σε: `reports/color-roles/profiles/<templateId>.json`.
+2. Store JSON profiles σε: `reports/color-roles/profiles/<templateId>_<ts>.json` (timestamped, never overwrite).
 3. **Manual review:** έλεγχος κάθε profile πριν περάσει στο scorer. Το Gemini ήδη έκανε το κλασικό λάθος (`surface` σε saturated red) στο template-42.
 4. Version tag στο schema (`"schemaVersion": 1`) για future changes.
 
 Αυτοματοποιημένο validation pass είναι TODO για αργότερα — για τώρα human-in-the-loop.
+
+**Status (2026-04-17):** Phase A **unblocked**. Prompt ωρίμασε σε v3 μετά από συστηματικό consistency testing στο template-126.
+
+Prompt iteration:
+- **v1** → baseline. Slot count ±3, secondary/tertiary 50% swap, occasional "surface" σε saturated colors.
+- **v2** → role allow-list/deny-list, quantitative tie-breakers, surface chroma threshold. Fixed swap + "surface" bug. Introduced regressions: text role copied the text's color, orphan `on-X` without `X`.
+- **v3 (ενεργό)** → rule "text role = role of slot beneath", `on-X requires X` enforcement + self-check. Closes v2 regressions. **12/12 text slots consistent, 8/8/8/8 slot count, 0 orphan-on-X violations across 4 runs.**
+
+Artifacts:
+- `reports/color-roles/template-analysis-prompt.md` — active prompt (= v3)
+- `reports/color-roles/template-analysis-prompt-v{1,2,3}.md` — history
+- `reports/color-roles/profiles/*.json` — timestamped runs
+- `reports/2026-04-17-template-126-consistency.html` — full v1/v2/v3 comparison
+- `reports/2026-04-17-m3-color-roles-reference.html` — M3 role reference + video adaptation doctrine
+- `scripts/analyze-template-colors.mjs` — batch runner (`--runs N`, `--all`)
+
+**Decision:** v3 locked as production prompt. No more prompt changes until scorer feedback provides a reason to iterate.
 
 ### Phase B — Smart color mapping
 
@@ -61,17 +78,17 @@ Decision for now: keep naming, structural-only. Το M3 role field κάνει τ
 - Ground truth θα χτιστεί με εμπειρία — όχι formal calibration dataset upfront.
 - Expand M3 coverage αν χρειαστεί (π.χ. `secondary-container`, `outline`).
 
-### Immediate next action
+### Immediate next action (2026-04-17)
 
-Phase A σε **1 template** end-to-end (template-42 είναι έτοιμο):
-1. Prompt → Gemini → JSON profile
-2. Manual review του JSON
-3. Τρέξε scorer με 3-5 palettes
-4. Manual check: βγάζει νόημα το top permutation;
+Prompt stability ✅. Επόμενο βήμα: **apply** στα templates.
 
-Αν ναι → scale σε 5 templates. Αν όχι → debug πριν scale.
+1. **Scale Phase A**: τρέξιμο v3 prompt σε 5 templates (πέρα από το template-126). Screenshots ήδη να μπουν στο `reports/color-roles/screenshots/`. Command: `node scripts/analyze-template-colors.mjs --all --runs 1`.
+2. **Manual review** των 5 JSON profiles — μόνο red flags, όχι nitpick.
+3. **Τρέξε scorer** (`reports/color-roles/color-scorer-prototype.js`) με 3-5 sample palettes σε κάθε profile.
+4. **Manual check**: βγάζει νόημα το top permutation; Αν ναι → Phase B/C integration. Αν όχι → αναλογικά debug (scorer thresholds, prompt refinement, ή role rule gap).
+5. **Connect to live runtime**: Phase C plan — port scorer στο gb library και feed brief palettes → runtime color assignment.
 
-## Progress (as of 2026-04-15)
+## Progress (as of 2026-04-17)
 
 ### Pipeline built
 ```
