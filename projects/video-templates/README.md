@@ -83,6 +83,7 @@ video → Gemini → raw analysis.md
 ```
 
 ### Skills shipped (`.claude/skills/`)
+- **auto-template** — end-to-end orchestrator. Takes a video path, runs Gemini CLI (user's authenticated subscription) on `docs/video-analysis-prompt.md`, runs `video-gap-analysis`, handles Q&A round-trips (max 2), presents Decision Table (only human-in-the-loop), then runs `video-analysis-to-template` + convert. Outputs to `ai-designer/template-analysis/template-{N}/`. Auto-increments template numbers starting at 900 (to separate from human-created).
 - **video-analysis-to-template** — parses gap report, builds full Motion Canvas template file section by section. Copies boilerplate verbatim from `template-131`. Stops if any D1-D10 dimension is unresolved Missing.
 - **video-gap-analysis** — evaluates raw video LLM output across 10 must-have dimensions (scene structure, element inventory, positions, animation techniques, timing, transitions, palette, dependencies, persistence, first-product differentiation). Outputs Confirmed/Ambiguous/Missing table + English Q's to send back to video LLM.
 - **template-describe** — describes an existing template (not inspected in detail yet).
