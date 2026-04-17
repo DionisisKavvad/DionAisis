@@ -21,15 +21,17 @@ Build an end-to-end system that lets you create a new video template by cloning 
 
 **Scope:** 30 templates. Χρώματα έρχονται δυναμικά από το brief κάθε φορά.
 
-**Artifacts:** `reports/color-roles/` στο video-templates repo περιέχει:
-- `color-role-analysis.md` — M3 role theory + template-42 worked example + section 8 για το πώς τροφοδοτεί το permutation scoring
-- `template-analysis-prompt.md` — Gemini prompt για per-template M3 color role analysis
-- `color-scorer-prototype.js` — N! permutation scorer με 3-axis scoring (text / adjacency / chroma)
+**Artifacts:** Όλα συγκεντρωμένα στο `color-roles/` στο video-templates repo (root folder):
+- `color-roles/docs/color-role-analysis.md` — M3 role theory + template-42 worked example + section 8 για το πώς τροφοδοτεί το permutation scoring
+- `color-roles/prompts/template-analysis-prompt.md` — active Gemini prompt για per-template M3 color role analysis (= v3)
+- `color-roles/prompts/slot-role-mapping-prompt.md` — Claude prompt για το slot→role mapping step
+- `color-roles/scorer/color-scorer-prototype.js` — N! permutation scorer με 3-axis scoring (text / adjacency / chroma)
+- `color-roles/scripts/*.mjs` — pipeline runners (analyze → generate-mapping → bundle-final, + orchestrator run-pipeline)
 
 ### Phase A — LLM annotation pass (per template)
 
 1. Τρέξιμο M3 prompt σε Gemini για κάθε template με screenshot.
-2. Store JSON profiles σε: `reports/color-roles/profiles/<templateId>_<ts>.json` (timestamped, never overwrite).
+2. Store JSON profiles σε: `color-roles/profiles/<templateId>_<ts>.json` (timestamped, never overwrite).
 3. **Manual review:** έλεγχος κάθε profile πριν περάσει στο scorer. Το Gemini ήδη έκανε το κλασικό λάθος (`surface` σε saturated red) στο template-42.
 4. Version tag στο schema (`"schemaVersion": 1`) για future changes.
 
@@ -43,12 +45,14 @@ Prompt iteration:
 - **v3 (ενεργό)** → rule "text role = role of slot beneath", `on-X requires X` enforcement + self-check. Closes v2 regressions. **12/12 text slots consistent, 8/8/8/8 slot count, 0 orphan-on-X violations across 4 runs.**
 
 Artifacts:
-- `reports/color-roles/template-analysis-prompt.md` — active prompt (= v3)
-- `reports/color-roles/template-analysis-prompt-v{1,2,3}.md` — history
-- `reports/color-roles/profiles/*.json` — timestamped runs
-- `reports/2026-04-17-template-126-consistency.html` — full v1/v2/v3 comparison
-- `reports/2026-04-17-m3-color-roles-reference.html` — M3 role reference + video adaptation doctrine
-- `scripts/analyze-template-colors.mjs` — batch runner (`--runs N`, `--all`)
+- `color-roles/prompts/template-analysis-prompt.md` — active prompt (= v3)
+- `color-roles/prompts/template-analysis-prompt-v{1,2,3}.md` — history
+- `color-roles/profiles/*.json` — timestamped runs
+- `color-roles/mappings/*.json` — Claude slot→role mapping outputs
+- `color-roles/final/*.json` — merged profile+mapping bundles
+- `color-roles/docs/template-126-consistency.html` — full v1/v2/v3 comparison
+- `color-roles/docs/m3-color-roles-reference.html` — M3 role reference + video adaptation doctrine
+- `color-roles/scripts/run-pipeline.mjs` — end-to-end orchestrator (`--all`, `--force`, `--skip-gemini`, `--skip-mapping`)
 
 **Decision:** v3 locked as production prompt. No more prompt changes until scorer feedback provides a reason to iterate.
 
@@ -82,9 +86,9 @@ Decision for now: keep naming, structural-only. Το M3 role field κάνει τ
 
 Prompt stability ✅. Επόμενο βήμα: **apply** στα templates.
 
-1. **Scale Phase A**: τρέξιμο v3 prompt σε 5 templates (πέρα από το template-126). Screenshots ήδη να μπουν στο `reports/color-roles/screenshots/`. Command: `node scripts/analyze-template-colors.mjs --all --runs 1`.
+1. **Scale Phase A**: τρέξιμο v3 prompt σε 5 templates (πέρα από το template-126). Screenshots ήδη να μπουν στο `color-roles/screenshots/`. Command: `node color-roles/scripts/run-pipeline.mjs --all` (ή `node color-roles/scripts/analyze-template-colors.mjs --all --runs 1` για μόνο Gemini).
 2. **Manual review** των 5 JSON profiles — μόνο red flags, όχι nitpick.
-3. **Τρέξε scorer** (`reports/color-roles/color-scorer-prototype.js`) με 3-5 sample palettes σε κάθε profile.
+3. **Τρέξε scorer** (`color-roles/scorer/color-scorer-prototype.js`) με 3-5 sample palettes σε κάθε profile.
 4. **Manual check**: βγάζει νόημα το top permutation; Αν ναι → Phase B/C integration. Αν όχι → αναλογικά debug (scorer thresholds, prompt refinement, ή role rule gap).
 5. **Connect to live runtime**: Phase C plan — port scorer στο gb library και feed brief palettes → runtime color assignment.
 
@@ -111,10 +115,41 @@ video → Gemini → raw analysis.md
 `docs/video-analysis-prompt.md` — 164-line structured prompt forcing the video LLM to describe scene structure, elements, entry/exit order, animation *techniques* (not just directions), visual groupings/dependencies, persistence, palette, typography.
 
 ### Recent commits of note
+- `26726f2` — template-900 pipeline artifacts (first auto-template run)
+- `e71c7f7` — auto-template skill (end-to-end orchestrator)
 - `c935827` — hint skill + blur-slide animation + template-146 refinements
 - `62db85f` — video-analysis-to-template + video-gap-analysis skills
 - `89b9ef3` — template-describe skill
 - `d0d23e9` — rules.md + /rule skill
+
+### auto-template first run (template-900, 2026-04-17)
+
+First end-to-end test of the auto-template skill against `test.mp4` (Manttitude skincare, 8 products, ~37s). Pipeline ran clean up to the Decision Table review step. Human-in-the-loop held exactly where intended.
+
+**Timeline:**
+1. Step 1–2 (auto): template number 900 + analysis folder created.
+2. Step 3 (auto): Gemini CLI on `test.mp4` via `@abs-path` syntax with `--yolo -o text`. Output: 106-line structured analysis. Exit 0.
+3. Step 4 (auto): first gap analysis → 4 Confirmed, 5 Ambiguous, 8 Missing (Q1–Q8 on bg slide direction, product image entrance uniformity, pill direction, exit model, width dependencies, container+text timing, first-product differentiation).
+4. Step 5 (auto): Q&A round 1 back to Gemini with same video. All 8 questions answered decisively in a single pass.
+5. Step 6 (auto): re-run gap analysis → 8 Confirmed, 2 Ambiguous (D3 positions + D5 timings, numeric assumptions), 0 Missing. **Coding-ready.**
+6. Step 7 (human): Decision Table presented with D1–D10 + critical items highlighted (exit model = single-unit push-up, priceBox FIXED vs categoryPill DYNAMIC, productImg X+Y tumble). Awaiting user approval before final coding.
+
+**Artifacts:** `ai-designer/template-analysis/template-900/`
+- `raw-analysis.md` (106 → 141 lines after Q&A merge)
+- `gap-analysis-round-0.md`, `gap-analysis-round-1.md`
+- `qa-round-1-prompt.md`, `qa-round-1-answers.md`
+- `gemini-stderr.log`
+
+**Validated assumptions (will inform future runs):**
+- Gemini CLI `@absolute-path.mp4` syntax works cleanly for video attachments (no Files API plumbing needed).
+- Single Q&A round sufficed for a moderately detailed video. Max-2-rounds policy looks right.
+- Gemini can re-attach the same video on follow-up without losing prior context for our purposes (answers were consistent with round 0).
+- Ambiguous D3 (positions) and D5 (timings) are expected residuals. Coding with safe numeric assumptions is the correct default, not another Q&A round.
+
+**Open to validate on next runs:**
+- Does the assumption hold for busier videos with >8 scenes?
+- How often does the Decision Table review actually catch drift vs. waste time? Worth instrumenting edit-count after a few runs.
+- Is `test.mp4` representative enough to be the canonical test, or do we need a second reference video with oldPrice + intro-differentiation to exercise those branches?
 
 ## Open questions (non-specific, research will clarify)
 - Where exactly does Claude Code drift off-guidelines during coding? No catalogued error-mode list yet — hint skill exists but the feedback loop that populates it hasn't been formalized.
