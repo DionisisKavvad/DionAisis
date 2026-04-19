@@ -16,4 +16,4 @@
 - iTerm
 
 ## MCP Servers
-None connected yet.
+- **gmail** (live) — user-level, code at `~/Projects/mcps/servers/gmail`. v1 = read-only + label management (search, list, get, list-labels, modify-labels). Registered via `claude mcp add -s user`. Weekly re-auth required (External + Testing, not verified). Monorepo `~/Projects/mcps/` hosts all future MCP servers.
