@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DionAi Wiki</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="toggle" id="toggle-sidebar" aria-label="Toggle sidebar" title="Toggle sidebar">
+      <span class="toggle-icon" aria-hidden="true"></span>
+    </button>
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Breadcrumb"></nav>
+  </header>
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+    <section class="empty-state" id="empty-state" hidden>
+      <h1>Welcome</h1>
+      <p>Pick a page from the sidebar, or open a group below.</p>
+      <ul class="empty-list" id="empty-list"></ul>
+    </section>
+    <iframe id="page" title="Wiki page" hidden></iframe>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

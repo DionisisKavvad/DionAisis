@@ -1,0 +1,245 @@
+:root {
+  --bg: #0f1115;
+  --bg-elev: #161a22;
+  --bg-hover: #1c2230;
+  --fg: #e6e8ec;
+  --fg-dim: #8a92a6;
+  --fg-muted: #5a6072;
+  --accent: #7aa2ff;
+  --accent-soft: rgba(122, 162, 255, 0.12);
+  --border: #232836;
+  --radius: 6px;
+  --topbar-h: 48px;
+  --sidebar-w: 260px;
+  --font-sys: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sys);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+body {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: var(--topbar-h) 1fr;
+  grid-template-areas:
+    "topbar topbar"
+    "sidebar main";
+  transition: grid-template-columns 0.18s ease;
+}
+
+body.sidebar-collapsed {
+  --sidebar-w: 0px;
+}
+
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+}
+
+.toggle {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--fg-dim);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  flex: 0 0 auto;
+}
+
+.toggle:hover {
+  background: var(--bg-hover);
+  color: var(--fg);
+  border-color: var(--border);
+}
+
+.toggle-icon,
+.toggle-icon::before,
+.toggle-icon::after {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  content: "";
+  position: relative;
+}
+
+.toggle-icon::before { position: absolute; top: -5px; left: 0; }
+.toggle-icon::after  { position: absolute; top: 5px;  left: 0; }
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.crumb {
+  color: var(--fg-dim);
+  text-decoration: none;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+  max-width: 40ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crumb:hover {
+  background: var(--bg-hover);
+  color: var(--fg);
+}
+
+.crumb.root {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.crumb.current {
+  color: var(--fg);
+  cursor: default;
+}
+
+.crumb.current:hover {
+  background: transparent;
+}
+
+.crumb-sep {
+  color: var(--fg-muted);
+  user-select: none;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  background: var(--bg-elev);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 0;
+}
+
+body.sidebar-collapsed .sidebar {
+  border-right-color: transparent;
+}
+
+.group {
+  margin-bottom: 4px;
+}
+
+.group-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--fg-muted);
+  padding: 10px 16px 6px;
+}
+
+.page-link {
+  display: block;
+  padding: 6px 16px;
+  color: var(--fg-dim);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background 0.08s, color 0.08s, border-color 0.08s;
+}
+
+.page-link:hover {
+  background: var(--bg-hover);
+  color: var(--fg);
+}
+
+.page-link.active {
+  background: var(--accent-soft);
+  color: var(--fg);
+  border-left-color: var(--accent);
+}
+
+.main {
+  grid-area: main;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#page {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: var(--bg);
+}
+
+.empty-state {
+  padding: 48px 32px;
+  max-width: 720px;
+}
+
+.empty-state h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.empty-state p {
+  color: var(--fg-dim);
+  margin: 0 0 20px;
+}
+
+.empty-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.empty-list a {
+  display: block;
+  padding: 10px 14px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.1s, background 0.1s;
+}
+
+.empty-list a:hover {
+  border-color: var(--accent);
+  background: var(--bg-hover);
+}
+
+.empty-list .group-label {
+  color: var(--fg-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-right: 8px;
+}
+
+[hidden] { display: none !important; }

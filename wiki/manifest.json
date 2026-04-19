@@ -1,0 +1,22 @@
+{
+  "groups": [
+    {
+      "slug": "video-templates",
+      "title": "Video Templates",
+      "pages": [
+        {
+          "slug": "presentation",
+          "title": "Presentation",
+          "path": "../projects/video-templates/presentation.html",
+          "tags": []
+        },
+        {
+          "slug": "color-roles",
+          "title": "Color Roles Hub",
+          "path": "../external/video-templates/color-roles/index.html",
+          "tags": ["palette", "m3"]
+        }
+      ]
+    }
+  ]
+}
