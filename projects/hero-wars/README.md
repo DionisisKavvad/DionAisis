@@ -1,5 +1,6 @@
 # hero-wars
 
+- **Type:** personal
 - **Code:** `/Users/dionisis/Projects/hero-wars`
 - **AWS Alias:**  dionisis
 - **Description:** App in the planning phase.

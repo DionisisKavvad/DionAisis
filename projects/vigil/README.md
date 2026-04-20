@@ -1,5 +1,6 @@
 # vigil
 
+- **Type:** personal
 - **Code:** TBD (path to be added 2026-04-18)
 - **AWS Alias:** None (no AWS)
 - **Description:** Background AI assistant that records your habits.

@@ -1,5 +1,6 @@
 # youtube-insights
 
+- **Type:** work
 - **Code:** `/Users/dionisis/Projects/my-youtube-insight-curator`
 - **AWS Alias:** gbInnovations
 - **Description:** Tool for organizing AI trend insights pulled from YouTube. Part of the broader insight engine vision.

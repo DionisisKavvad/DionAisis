@@ -1,5 +1,6 @@
 # gmail-mcp
 
+- **Type:** personal
 - **Code:** `/Users/dionisis/Projects/mcps/servers/gmail`
 - **Monorepo:** `/Users/dionisis/Projects/mcps` (home for all personal MCP servers, future public GitHub project)
 - **Description:** Gmail MCP server for Claude Code. v1 = read-only + label management (5 tools).

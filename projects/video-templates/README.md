@@ -1,5 +1,6 @@
 # video-templates
 
+- **Type:** work
 - **Code:** `/Users/dionisis/Projects/video-templates`
 - **AWS Alias:** none
 - **Description:** Motion Canvas-based system for creating animated video templates with Angular platform integration. Includes `converter.js` for S3/DynamoDB uploads and `project.ts` for rendering.

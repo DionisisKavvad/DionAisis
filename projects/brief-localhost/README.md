@@ -1,5 +1,6 @@
 # brief-localhost
 
+- **Type:** work
 - **Code:** `/Users/dionisis/Projects/brief-localhost`
 - **AWS Alias:** none (uses direct credentials from .env)
 - **Description:** SQS-based worker that processes design briefs using Claude Agent SDK. Analyzes products and generates color/font recommendations.

@@ -1,5 +1,6 @@
 # greek-ecommerce
 
+- **Type:** work
 - **Code:** `/Users/dionisis/Projects/Business development/scrape-the-greek-ecommerce-v2`
 - **AWS Alias:** equality
 - **Description:** Scraping pipeline for Greek e-commerce marketplaces (Skroutz, BestPrice). Two Step Functions: `scrape-greek-marketplaces` (collects stores) and `scrape-greek-stores` (processes each store).

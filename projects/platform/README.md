@@ -2,6 +2,7 @@
 
 The main product. Video creation platform with brief integration.
 
+- **Type:** work
 - **Status:** Active
 - **Key date:** None
 

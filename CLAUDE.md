@@ -20,7 +20,9 @@ Communication style and other standing rules live in `.claude/rules/`. Apply all
 - @.claude/rules/communication-style.md
 
 ## Projects
-Active workstreams live in `projects/`. Each has its own folder with a `README.md` (status, description, key dates). When Dionisis starts work on one, read its README first and then any other files in that folder. Update the README when status or dates change.
+Active workstreams live in `projects/`. Each has its own folder with a `README.md` (type, status, description, key dates). When Dionisis starts work on one, read its README first and then any other files in that folder. Update the README when status or dates change.
+
+Every project README has a `- **Type:**` line (`work` or `personal`) as the first metadata field. A summary table of all projects lives at `projects/INDEX.md`. Update both the README and the INDEX row when status, type, or key date changes.
 
 ## Tools Connected
 - VS Code, Claude Code, GitHub, iTerm (local dev)

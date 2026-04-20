@@ -1,5 +1,6 @@
 # claude-code-stuff
 
+- **Type:** personal
 - **Code:** N/A (sandbox project)
 - **Description:** Πειραματόκηπος για Claude Code. Εδώ μπαίνουν δοκιμές με νέα features, hooks, skills, sub-agents, MCP servers, και ό,τι άλλο θέλει ο Dionisis να δοκιμάσει.
 - **Status:** Active

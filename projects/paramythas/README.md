@@ -1,5 +1,6 @@
 # paramythas
 
+- **Type:** personal
 - **Code:** `/Users/dionisis/Projects/Paramythas`
 - **AWS Alias:** dionisis
 - **Description:** App in active development.
