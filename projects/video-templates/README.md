@@ -83,6 +83,62 @@ Decision for now: keep naming, structural-only. Το M3 role field κάνει τ
 - Ground truth θα χτιστεί με εμπειρία — όχι formal calibration dataset upfront.
 - Expand M3 coverage αν χρειαστεί (π.χ. `secondary-container`, `outline`).
 
+### Alternative strategy: profile-less sequential assignment
+
+Παράλληλο track στη profile-based προσέγγιση. **Δεν αποθηκεύουμε τίποτα ανά template**, καμία Gemini annotation, κανένα M3 role. Επέκταση της λογικής που ήδη κάνει η `text-color.service` για text → σε **όλα τα elements που πρέπει να πάρουν χρώμα**.
+
+**Core idea:**
+1. Από το brief palette → βρίσκουμε το πιο σκούρο χρώμα → background.
+2. Για κάθε επόμενο colored element (με συγκεκριμένη σειρά), διαλέγουμε από τα remaining palette colors αυτό που δίνει το καλύτερο contrast / visual separation από ό,τι ήδη έχει βαφτεί γύρω του.
+3. Καμία per-template annotation. Το template δηλώνει απλά "εδώ χρειάζομαι χρώμα", όχι ποιο role παίζει.
+
+**Palette-group reuse (όχι πάντα νέο χρώμα):**
+Κάθε element δηλώνει ένα group tag. **V1 naming**: απλά `color1group`, `color2group`, `color3group`, ... (numbered, όχι semantic). Elements με ίδιο group **παίρνουν το ίδιο χρώμα**, ακόμα κι αν βαφτούν σε διαφορετικές στιγμές.
+
+Algorithm:
+- Όταν έρθει η σειρά ενός element, κοίτα αν το group του έχει ήδη assigned color → reuse.
+- Αν όχι → pick το επόμενο κατάλληλο χρώμα από τα remaining, assign στο group.
+
+Παράδειγμα:
+- background → χρώμα 1 (group: `color1group`)
+- element1 (πάνω από background, group `color2group`) → χρώμα 2
+- element2 (group `color2group`) → reuse χρώμα 2 (ίδιο group)
+- element3 (group `color3group`) → χρώμα 3 (νέο group, νέο χρώμα)
+
+Ελάχιστο annotation ανά element (ένα numbered tag), όχι full profile. Αν αργότερα χρειαστούν semantic names (`accent`, `cta`, κ.λπ.) αλλάζουμε σε named groups, αλλά για αρχή το numbered είναι αρκετό.
+
+**Pros:**
+- Zero setup cost ανά template. Καινούριο template → δουλεύει instantly.
+- Καμία manual review of profiles, καμία drift από Gemini errors.
+- Palette changes ρέουν αυτόματα χωρίς re-annotation.
+
+**V1 simplification — μόνο contrast vs. element-behind:**
+Για αρχή **δεν** κοιτάμε grouping rules, neighbor diversity, ή semantic roles στη selection. Ο μόνος κανόνας:
+
+> Για κάθε element, διάλεξε από τα remaining palette colors αυτό που δίνει το καλύτερο contrast έναντι του **element που είναι ακριβώς από πίσω του** (το layer από κάτω στο z-stack).
+
+Τα `colorNgroup` tags παίζουν **μόνο** για reuse (αν υπάρχει ήδη χρώμα assigned στο group, το ξαναπαίρνει). Αν δεν υπάρχει → contrast-vs-behind rule. Τίποτε άλλο στο v1.
+
+**Open questions (v1 scope):**
+- **Element order**: ποιο element βαφτεί δεύτερο, τρίτο, κ.ο.κ.; Deterministic ordering (z-index? DOM order? manual priority list per template?).
+- **"Behind" resolution**: πώς βρίσκουμε programmatically το element από πίσω; Parent node; κοντινότερο lower-z sibling που επικαλύπτεται spatially;
+- **Contrast metric**: APCA (όπως η text-color.service) ή WCAG ratio; Same metric για text και για non-text elements, ή διαφορετικό threshold;
+- **Tie-breaking**: αν δύο palette colors δίνουν σχεδόν ίδιο contrast, πώς επιλέγουμε (palette order? chroma? hue distance από background?);
+- **Reproducibility**: ίδιο palette + ίδιο template → ίδιο output (must-have).
+
+**Explicitly deferred (not v1):** grouping rules beyond reuse, neighbor-aware diversity, hue-diversity constraints, semantic role signals, chromatic/neutral split.
+
+**Comparison with profile-based approach:**
+| Criterion | Profile-based (current) | Profile-less (alternative) |
+|---|---|---|
+| Setup per template | Gemini analysis + manual review | None |
+| Semantic fidelity | High (M3 roles) | Low (pure contrast) |
+| Runtime cost | Lookup only | Sequential decision per element |
+| Failure mode | Wrong role annotation | Wrong element order / ambiguous contrast ties |
+| New template onboarding | ~minutes (analyze + review) | Instant |
+
+**Decision pending:** δοκιμή του alternative σε 2-3 templates μόλις σταθεροποιηθεί το profile-based baseline, για A/B visual comparison. Δεν αντικαθιστά το profile-based a priori, αλλά κερδίζει αν το visual output είναι comparable με μηδενικό setup cost.
+
 ### Immediate next action (2026-04-17)
 
 Prompt stability ✅. Επόμενο βήμα: **apply** στα templates.
@@ -165,15 +221,21 @@ Next steps deliberately left open: research will make them specific.
 ### Signal animation + property animation conflict
 Review signal animations and handle the case where a signal animation and a regular property animation are both assigned as in/out on the same node and both target a common property. Currently the property animation's initial-value setter destroys the signal's reactive binding, so the signal animation silently fails (documented in H-03). Decision needed: either throw an explicit error when this conflict is detected, or find a way to compose them (if possible). Known workarounds exist (separate inner/outer nodes, combined signal utility) but no runtime guard prevents the silent failure.
 
+### Text color: FILL_MAP key collision across products (FIXED 2026-04-21)
+`buildTextKey` in `text-color-map.service.ts` originally built keys as `progenitorKey::textKey` where `progenitorKey` fell back to `'root'` when the progenitor had no `context` or `_id`. Product progenitors typically lack both, so all products shared the same key (e.g. `root::price`). During recalculate, each product correctly computed its own color, but the last product's write to the FILL_MAP overwrote all previous ones. During playback, every product read that last value. Fix: when `progenitorKey` would fall back to `'root'`, derive a `product-{index}` key from the progenitor's position among its `_type === 'Product'` siblings (filtering out non-product children of the Products container). Keys now read `product-0::price`, `product-1::price`, etc. Discovered via template-81 (sliding background shapes, different text colors per product). Validated across all templates.
+
+### Text color: targeted invalidation on direct edits
+The frame-based guard (2026-04-21) computes text colors once at rest position and caches them in FILL_MAP. Known limitation: when the user edits text properties (font size, content) via direct node update in Angular (no MC recalculate), the text may grow to overlap a different background, but the cached color won't update. Fix: on direct text edit, invalidate that text's FILL_MAP key + trigger a one-shot re-compute. This works because the user can only select/edit elements at rest position (if animating, the element isn't selectable), so the re-compute frame is correct by definition.
+
 ### Text color strategies: document and decide
 Catalog the three text color strategies that have been tried and decide the final approach:
 1. **White/Black** (original): binary pick of #ffffff or #444444 via APCA contrast. Fails on dual backgrounds.
 2. **Grayscale** (intermediate, `grayscale-solver.ts`): minimax sweep of 51 grayscale values. Better on dual backgrounds but can't use brand colors.
 3. **Palette** (current, `text-color.service.ts`): picks the best palette color via minimax APCA. Falls back to grayscale solver for complex dual-background cases.
 
-All three share the ahead-of-time problem: text color depends on rendered backgrounds, so it can't be decided before the template runs. Current workaround: reactive signals + first-fill freeze. Proposed long-term fix: build-time palette dependency map (run analysis mode during convert, pre-compute mappings, resolve at platform runtime with zero geometry).
+All three share the ahead-of-time problem: text color depends on rendered backgrounds, so it can't be decided before the template runs. **Solved (2026-04-21):** MC's recalculate-cycle pattern runs an invisible pass through all frames before playback. The frame-based guard (deferred effect per text, fires at in-animation rest time) computes the correct color during recalculate when backgrounds are at their animated positions. Results are cached in a generation-aware FILL_MAP with per-product unique keys. During playback, texts read from the map instantly. No separate analysis scene, no build-time pre-computation needed.
 
-Need to document: which strategy is the final one, how the grayscale fallback interacts with the palette strategy, and whether the build-time approach is worth pursuing now or later.
+Remaining TODO: document which strategy is the final one and how the grayscale fallback interacts with the palette strategy.
 
 ## Notes
 - Full docs in repo under `docs/` (PROJECT_INDEX, API_REFERENCE, COMPONENT_CATALOG, NAVIGATION_INDEX, video-template-design-rules-v-1-1-4, rules.md).
