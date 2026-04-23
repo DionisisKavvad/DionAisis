@@ -237,7 +237,40 @@ All three share the ahead-of-time problem: text color depends on rendered backgr
 
 Remaining TODO: document which strategy is the final one and how the grayscale fallback interacts with the palette strategy.
 
+## Progress (2026-04-23): Hierarchy-Preserving Constraint Solver
+
+Built and integrated a **third color assignment strategy** alongside the existing two (profile-based M3 roles, profile-less auto-color).
+
+**What it does:** Pre-render constraint solver that assigns palette colors to template slots based on relational constraints (luminance hierarchy, saturation budget, contrast pairs) instead of semantic labels (M3) or greedy local contrast (auto-color).
+
+**4 pillars:** (1) Background must be luminance extreme, (2) Max 2 high-chroma elements, (3) Text contrast floor 45 Lc APCA, (4) Shape contrast floor 25 Lc.
+
+**Validated:** 27 templates x 10 diverse palettes. Results in `docs/text-colors/2026-04-23-hierarchy-preserving-constraints.md`.
+
+**Files created in video-templates repo:**
+- `src/scenes/services/hierarchy-solver-engine.ts` — TypeScript port of solver (pure math, no DOM)
+- `src/scenes/services/hierarchy-color.service.ts` — dispatcher service (solver → FILL_MAP → TextColorService)
+- `src/scenes/data/template-descriptors.json` — pre-extracted slot descriptors for 27 templates
+- `color-roles/solver/` — prototype solver scripts (.mjs) used for validation
+
+**Files modified:**
+- `src/scenes/core/function-execution.ts` — auto-injects HierarchyColorService instead of TextColorService directly
+- `src/scenes/types/function.types.ts` — added HierarchyColorService to args interface
+- `build-for-angular.sh` — added `src/scenes/data/` directory to build copy
+
+**Strategy switching** via `colorAssignmentStrategy` scene variable:
+- `'auto'` (default): solver if descriptor exists, otherwise legacy
+- `'hierarchy-solver'`: force solver
+- `'legacy'`: always use TextColorService directly
+
+**Bug found and fixed during testing:** generation string mismatch between HierarchyColorService and TextColorService caused FILL_MAP to be cleared when TextColorService ran. Fixed by using identical generation format.
+
+### Open issue: shape masks/patterns breaking with dynamic color replacement
+
+Ανεξάρτητα από τη στρατηγική (auto-color ή hierarchy solver), κάποια shapes που είναι masks ή patterns δεν τα έχουμε κάνει σωστά στα templates τους. Με το δυναμικό color replacement στα shapes χαλάνε πράγματα (clip containers, composite operations). Χρειάζεται διερεύνηση per-template για ποια shapes πρέπει να εξαιρεθούν από auto-color.
+
 ## Notes
 - Full docs in repo under `docs/` (PROJECT_INDEX, API_REFERENCE, COMPONENT_CATALOG, NAVIGATION_INDEX, video-template-design-rules-v-1-1-4, rules.md).
+- Reports moved to `docs/text-colors/` (auto-color system status, shapes review, hierarchy-preserving constraints).
 - Build/dev: `npm run serve`, `npm run build`.
 - Convert: `npm run convert [templateName] [vertical|horizontal|square] [dev]`.
