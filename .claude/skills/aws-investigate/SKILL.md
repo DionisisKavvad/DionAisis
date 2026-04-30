@@ -38,23 +38,54 @@ Never jump straight to CLI calls without discovery. Never guess resource names.
 
 ---
 
+## Phase 0: Project Overview
+
+Run this before anything else when the user gives a project name (not a direct alias).
+
+### Step 0.1: Read the project README
+Read `projects/<name>/README.md` in DionAi. Pull:
+- `Code:` (path to the codebase)
+- `AWS Alias:` (which account to use — if missing, ask Dionisis and stop)
+- Any description of what the project does (helps interpret vague workflow names)
+
+### Step 0.2: Enumerate all available workflows
+`cd` to the project's code path. Do a quick scan of IaC files to build a complete list of all defined workflows:
+
+1. From `serverless.yml` / `serverless.ts`: list all `functions:` entries and any `stepFunctions:` or `events:` blocks
+2. From `template.yaml` / SAM: list all `AWS::Lambda::Function` and `AWS::StepFunctions::StateMachine` resources
+3. From CDK `lib/**`: grep for `new Function`, `new StateMachine`, `new Rule`, `new Queue`
+4. From `*.tf`: grep for `aws_lambda_function`, `aws_sfn_state_machine`
+
+Output a compact list before proceeding:
+
+```
+Project: youtube-insights (code: ~/Projects/youtube-insights)
+Available workflows:
+- ingest-videos (Lambda, scheduled daily)
+- process-transcripts (Step Function, triggered by ingest)
+- publish-posts (Lambda, manual trigger)
+- cleanup-old-items (Lambda, scheduled weekly)
+```
+
+This is your working knowledge. Use it in Step 1.2 to match the user's request.
+
+### Step 0.3: If user gave only an alias
+Skip Phase 0 entirely. No project context to discover, go straight to Phase 2 with the alias.
+
+---
+
 ## Phase 1: Discovery
 
-### Step 1.1: Find the project
-- If the user mentioned a project name (e.g. "youtube-insights"), read `projects/<name>/README.md` in DionAi
-- Pull `Code:` (path to the actual codebase) and `AWS Alias:` (which account to use)
-- If `AWS Alias:` is missing from the README, ask Dionisis which alias to use and update the README with his answer
-- If the user mentioned only an alias (e.g. "investigate gbInnovations ..."), skip straight to Phase 2 (no project context to discover)
+### Step 1.1: Match the user's request to a workflow
+Using the workflow list from Phase 0, match what the user said to a specific workflow:
 
-### Step 1.2: Identify the workflow in question
-From the user's message, extract the specific thing they're asking about:
-- A workflow name ("ingest worker", "daily report", "checkout flow")
-- A specific event or execution ("what ran at 3pm yesterday")
-- A symptom ("why it crashed", "why it was slow")
+- If **1 clear match**: proceed with it, no question needed
+- If **2+ plausible matches**: ask Dionisis which one, show the list — don't guess
+- If **0 matches**: show the full workflow list and ask which to investigate — do not proceed blind
 
-If the workflow is ambiguous, ask before discovering. Wrong workflow = wrong resources = wasted time.
+Only ask when you have 2+ candidates or 0 candidates. Single match = proceed.
 
-### Step 1.3: Discover resources from code + IaC
+### Step 1.2: Discover resources from code + IaC
 `cd` to the project's code path. Search for the workflow in this order:
 
 1. **IaC files (highest signal):**

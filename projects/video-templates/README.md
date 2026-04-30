@@ -265,6 +265,25 @@ Built and integrated a **third color assignment strategy** alongside the existin
 
 **Bug found and fixed during testing:** generation string mismatch between HierarchyColorService and TextColorService caused FILL_MAP to be cleared when TextColorService ran. Fixed by using identical generation format.
 
+## Progress (2026-04-30): colorAssignment feedback + custom palette editing
+
+**What:** Full round-trip from solver → Angular → UI → save → restore for custom palettes.
+
+**video-templates repo (`f1e6571`):**
+- `emitColorAssignment()` in `hierarchy-color.service.ts`: after solver + `applyLockedColors` run, emits `mc:colorAssignment` CustomEvent with final `{ '__color[N]': '#hex' }` mapping
+- All `console.log` in `hierarchy-color.service.ts` and `text-color.service.ts` converted to `Logger.debug` (controlled by `LOG_GROUPS.DEBUG = false` in `constants.ts`)
+
+**platform-client-v2 (uncommitted):**
+- `create-video.service.ts`: 3 new signals (`colorAssignment`, `lockedColors`, `isEditingColors`), effect to restore/reset lockedColors on palette change, `lockedColors` injected into template variables, `analyzeTemplateUpdate` detects lockedColors changes
+- `motion-canvas.component.ts`: listens for `mc:colorAssignment` event, feeds into `colorAssignment` signal
+- `template-properties.component.ts`: editing card uses `editingSwatches` computed (base palette colors, not solver output), `onSaveDraft` saves with `lockedColors` + `templateTag` for template-scoped custom palettes, `filteredCustomPalettes` reads signals directly (not via `getTemplateName()` which uses `untracked()`)
+- `Palette` interface extended with `lockedColors?: Record<string, string>` and `templateTag?: string`
+- Default color strategy changed from `color-groups` to `contrast-aware`, Groups button disabled
+
+### Open issue: shapes not picking up color changes in some templates
+
+Σε κάποια templates, όταν αλλάζουμε palette color, υπάρχουν shapes που δεν παίρνουν το νέο χρώμα. Πιθανώς gradients ή composite elements που δεν περνάνε από τον solver. Παράδειγμα: template-121 με gradient shapes. Χρειάζεται investigation per-template.
+
 ### Open issue: shape masks/patterns breaking with dynamic color replacement
 
 Ανεξάρτητα από τη στρατηγική (auto-color ή hierarchy solver), κάποια shapes που είναι masks ή patterns δεν τα έχουμε κάνει σωστά στα templates τους. Με το δυναμικό color replacement στα shapes χαλάνε πράγματα (clip containers, composite operations). Χρειάζεται διερεύνηση per-template για ποια shapes πρέπει να εξαιρεθούν από auto-color.
