@@ -40,6 +40,7 @@ Skills live in `.claude/skills/`. The pattern:
 - **perplexity-research** — research any topic via the Perplexity API (web search + AI synthesis with citations). Triggers on "research X", "look up X", "find out about X", "what's the current state of X". See `.claude/skills/perplexity-research/SKILL.md`.
 - **create-video** — end-to-end workflow for planning a new video in `content-engine`: brief, script, shots, title/thumbnail, cross-posts. Triggers on "new video", "plan video", "video about X", "/create-video". See `.claude/skills/create-video/SKILL.md`.
 - **advisor** — maieutic advisor για να ξεκαθαρίσεις μεγάλες αφηρημένες ερωτήσεις πριν αρχίσεις να τις εκτελείς (γενικός στόχος, direction, vision). Setup mode (χτίζει thesis αγνοώντας projects) + Consultation mode. Triggers on "/advisor", "advisor session", "consult advisor". See `.claude/skills/advisor/SKILL.md`.
+- **create-mcp** — scaffold and harden a new MCP server inside `~/Projects/mcps/`. Walks Phase S (secrets hardening, 8 layers) + Phase I (write protection, 9 layers). Triggers on "new mcp", "create mcp", "mcp for X", "/create-mcp". See `.claude/skills/create-mcp/SKILL.md`.
 
 ## Sub-Agents
 Sub-agents live in `.claude/agents/`. Each one has its own reason to exist (isolated context, specialized tools, narrower scope, different model, etc.). When a skill wants to be executed through a sub-agent, it will say so inside its own `SKILL.md`. Do not assume delegation defaults here.
@@ -79,14 +80,10 @@ Memory + context files + decision log = the assistant gets smarter over time wit
 - Update `context/current-priorities.md` when focus shifts.
 - Update `context/goals.md` at the start of each quarter.
 - Log decisions in `decisions/log.md` as they happen.
-- Add files to `references/` (SOPs, examples, style guides) when useful patterns emerge.
 - Build a skill in `.claude/skills/` only when a request keeps repeating.
 
 ## Templates
 Reusable templates live in `templates/`. Currently: `session-summary.md` for session closeouts.
-
-## References
-`references/sops/` for standard operating procedures. `references/examples/` for example outputs and style guides. Both empty until patterns emerge.
 
 ## Archives Rule
 Never delete old material. When something is complete or outdated, move it into `archives/` with a date prefix. History is cheap, regret is expensive.

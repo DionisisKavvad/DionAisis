@@ -68,13 +68,6 @@ create-second-brain/
       scaffold/
         archives/.gitkeep
 
-    references/
-      MODULE.md
-      claude-section.md
-      scaffold/
-        references/sops/.gitkeep
-        references/examples/.gitkeep
-
     templates/
       MODULE.md
       claude-section.md
@@ -126,7 +119,6 @@ Directory tree copied verbatim into the user's workspace. Paths are relative to 
 | agents-framework | Pattern for specialized sub-agents | none |
 | advisor | Maieutic advisor for big abstract questions + drift reviews | skills-framework, agents-framework |
 | archives | "Never delete" rule, move outdated material with date prefix | none |
-| references | SOPs and example outputs | none |
 | templates | Reusable templates (session summaries, etc.) | none |
 
 ## Init Flow
