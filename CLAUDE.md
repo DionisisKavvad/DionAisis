@@ -82,8 +82,5 @@ Memory + context files + decision log = the assistant gets smarter over time wit
 - Log decisions in `decisions/log.md` as they happen.
 - Build a skill in `.claude/skills/` only when a request keeps repeating.
 
-## Templates
-Reusable templates live in `templates/`. Currently: `session-summary.md` for session closeouts.
-
 ## Archives Rule
 Never delete old material. When something is complete or outdated, move it into `archives/` with a date prefix. History is cheap, regret is expensive.
