@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animation System Unification Analysis</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #252525;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #888;
+    --accent: #6c9fff;
+    --accent-2: #ff6c9f;
+    --accent-3: #9fff6c;
+    --accent-4: #ffc46c;
+    --code-bg: #1e1e2e;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .slide-container {
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .slide {
+    display: none;
+    height: 100vh;
+    padding: 60px 80px;
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .slide.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h1 {
+    font-size: 2.8em;
+    font-weight: 700;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  h2 {
+    font-size: 2em;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--accent);
+  }
+
+  h3 {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    color: var(--text);
+  }
+
+  p, li {
+    font-size: 1.1em;
+    margin-bottom: 8px;
+  }
+
+  ul { padding-left: 24px; }
+  li { margin-bottom: 6px; }
+
+  .subtitle {
+    font-size: 1.3em;
+    color: var(--text-dim);
+    margin-bottom: 40px;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+    overflow-x: auto;
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    color: #a9dc76;
+  }
+
+  pre code { color: #e8e8e8; }
+
+  .keyword { color: #ff6188; }
+  .string { color: #ffd866; }
+  .comment { color: #727072; font-style: italic; }
+  .type { color: #78dce8; }
+  .func { color: #a9dc76; }
+  .number { color: #ab9df2; }
+  .property { color: #fc9867; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 20px 0;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .card h3 { margin-top: 0; }
+
+  .card.highlight-blue { border-color: var(--accent); }
+  .card.highlight-pink { border-color: var(--accent-2); }
+  .card.highlight-green { border-color: var(--accent-3); }
+  .card.highlight-orange { border-color: var(--accent-4); }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  .tag-blue { background: rgba(108, 159, 255, 0.2); color: var(--accent); }
+  .tag-pink { background: rgba(255, 108, 159, 0.2); color: var(--accent-2); }
+  .tag-green { background: rgba(159, 255, 108, 0.2); color: var(--accent-3); }
+  .tag-orange { background: rgba(255, 196, 108, 0.2); color: var(--accent-4); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.95em;
+  }
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    background: var(--surface);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .arrow {
+    font-size: 1.5em;
+    color: var(--accent);
+    text-align: center;
+    margin: 10px 0;
+  }
+
+  .highlight-box {
+    background: rgba(108, 159, 255, 0.08);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .warning-box {
+    background: rgba(255, 108, 159, 0.08);
+    border-left: 4px solid var(--accent-2);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .success-box {
+    background: rgba(159, 255, 108, 0.08);
+    border-left: 4px solid var(--accent-3);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .nav {
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    z-index: 100;
+  }
+
+  .nav button {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.2s;
+  }
+
+  .nav button:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .nav .counter {
+    color: var(--text-dim);
+    font-size: 0.9em;
+  }
+
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+
+  .flow-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 0.9em;
+  }
+
+  .flow-arrow { color: var(--accent); font-size: 1.3em; }
+
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+    gap: 16px;
+  }
+
+  .vs-divider::before, .vs-divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--border);
+  }
+
+  .vs-divider span {
+    color: var(--accent-2);
+    font-weight: 700;
+    font-size: 1.2em;
+  }
+
+  .side-by-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .side-by-side pre {
+    margin: 0;
+  }
+
+  .label {
+    font-size: 0.85em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .label-blue { color: var(--accent); }
+  .label-pink { color: var(--accent-2); }
+  .label-green { color: var(--accent-3); }
+</style>
+</head>
+<body>
+
+<div class="slide-container">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active">
+  <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
+    <h1>Animation System Unification</h1>
+    <p class="subtitle">3 animation types, 1 goal: should they become a single system?</p>
+    <div style="margin-top: 40px;">
+      <p style="color: var(--text-dim);">video-templates project</p>
+      <p style="color: var(--text-dim);">2026-05-05</p>
+    </div>
+    <div style="margin-top: 60px;">
+      <div class="grid-3">
+        <div class="card highlight-blue">
+          <h3>Custom Animations</h3>
+          <p style="color:var(--text-dim); font-size:0.9em;">Named presets, multi-property</p>
+        </div>
+        <div class="card highlight-pink">
+          <h3>Tween Animations</h3>
+          <p style="color:var(--text-dim); font-size:0.9em;">Direct single-property tweens</p>
+        </div>
+        <div class="card highlight-green">
+          <h3>Signal Animations</h3>
+          <p style="color:var(--text-dim); font-size:0.9em;">Programmatic, reactive signals</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: The Problem -->
+<div class="slide">
+  <h2>The Problem</h2>
+  <p class="subtitle">3 systems that conceptually do the same thing: "animate a layer"</p>
+
+  <div class="grid-3" style="margin-top: 30px;">
+    <div class="card highlight-blue">
+      <span class="tag tag-blue">Custom</span>
+      <h3>Named Multi-Property</h3>
+      <pre><code>{
+  <span class="property">property</span>: <span class="string">'easeFadeAndPosition-1'</span>,
+  <span class="property">startTime</span>: <span class="number">0</span>,
+  <span class="property">params</span>: [<span class="number">200</span>, <span class="number">0.6</span>, {}],
+  <span class="property">type</span>: <span class="string">'in'</span>
+}</code></pre>
+      <p style="font-size:0.85em; color:var(--text-dim);">Expanded by <code>translateCustomAnimationIntoAnimations()</code> into flat tweens</p>
+    </div>
+
+    <div class="card highlight-pink">
+      <span class="tag tag-pink">Tween</span>
+      <h3>Direct Property</h3>
+      <pre><code>{
+  <span class="property">property</span>: <span class="string">'opacity'</span>,
+  <span class="property">startTime</span>: <span class="number">0.5</span>,
+  <span class="property">params</span>: [<span class="number">1</span>, <span class="number">2</span>, <span class="string">'easeInCubic'</span>],
+  <span class="property">type</span>: <span class="string">'in'</span>
+}</code></pre>
+      <p style="font-size:0.85em; color:var(--text-dim);">Dot-notation traversal on layer, call with params</p>
+    </div>
+
+    <div class="card highlight-green">
+      <span class="tag tag-green">Signal</span>
+      <h3>Programmatic</h3>
+      <pre><code>{
+  <span class="property">startTime</span>: <span class="number">0</span>,
+  <span class="property">duration</span>: <span class="number">0.8</span>,
+  <span class="property">signalAnimation</span>: {
+    <span class="property">name</span>: <span class="string">'createTypewriterChars'</span>,
+    <span class="property">options</span>: { <span class="property">fade</span>: <span class="number">true</span> }
+  }
+}</code></pre>
+      <p style="font-size:0.85em; color:var(--text-dim);">Factory from registry, reactive signal bindings</p>
+    </div>
+  </div>
+
+  <div class="warning-box" style="margin-top: 30px;">
+    <strong>Core Insight:</strong> In practice, even raw tweens use curated/tested combinations. Arbitrary params are a footgun. Not all easing+distance combos look good.
+  </div>
+</div>
+
+<!-- SLIDE 3: Current Pipeline -->
+<div class="slide">
+  <h2>Current Processing Pipeline</h2>
+  <p class="subtitle">How animations flow from template declaration to screen</p>
+
+  <div class="flow-diagram" style="margin-top:40px;">
+    <div class="flow-box">Template declares<br><code>_animations[]</code></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box" style="border-color:var(--accent)"><code>processCustomAnimations()</code><br><small>expands named presets into flat tweens</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box" style="border-color:var(--accent-2)"><code>animateLayers()</code><br><small>branches: signal vs tween</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box" style="border-color:var(--accent-3)"><code>delay(time, gen)</code><br><small>schedule execution</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box"><code>yield* all(...gens)</code></div>
+  </div>
+
+  <h3 style="margin-top:40px;">Key Code Locations</h3>
+  <table>
+    <tr><th>File</th><th>Role</th></tr>
+    <tr><td><code>src/animations/index.ts</code></td><td>Custom animation definitions (48 presets)</td></tr>
+    <tr><td><code>src/scenes/services/animation.service.ts</code></td><td>Executor (animateLayers, processCustomAnimations)</td></tr>
+    <tr><td><code>src/scenes/gbLibrary-utils.tsx</code></td><td>translateCustomAnimationIntoAnimations()</td></tr>
+    <tr><td><code>src/scenes/signal-animations/</code></td><td>Signal animation factories</td></tr>
+    <tr><td><code>src/scenes/config/easing.config.ts</code></td><td>String-to-function easing map</td></tr>
+  </table>
+
+  <div class="highlight-box" style="margin-top:20px;">
+    <strong>Motion Canvas key concept:</strong> <code>node.property(value, duration, easing)</code> returns a <code>ThreadGenerator</code>. This IS the tween. The framework interpolates frame-by-frame. Signals create reactive bindings that update every frame.
+  </div>
+</div>
+
+<!-- SLIDE 4: Strategy 1 Overview -->
+<div class="slide">
+  <h2>Strategy 1: Factory Functions</h2>
+  <p class="subtitle">Every animation becomes a factory returning <code>{ generator: ThreadGenerator }</code></p>
+
+  <div class="highlight-box">
+    <strong>Core idea:</strong> One registry, one interface, one code path. Signal animations already use this exact pattern. Make everything else conform.
+  </div>
+
+  <h3>Unified Template API</h3>
+  <pre><code><span class="property">_animations</span>: [
+  { <span class="property">startTime</span>: <span class="number">0.3</span>, <span class="property">duration</span>: <span class="number">0.8</span>, <span class="property">animation</span>: <span class="string">'easeFadeAndPosition1'</span>, <span class="property">type</span>: <span class="string">'in'</span> },
+  { <span class="property">startTime</span>: <span class="number">0</span>,   <span class="property">duration</span>: <span class="number">2.0</span>, <span class="property">animation</span>: <span class="string">'createTypewriterChars'</span>, <span class="property">type</span>: <span class="string">'in'</span>, <span class="property">options</span>: { <span class="property">fade</span>: <span class="number">true</span> } },
+  { <span class="property">startTime</span>: <span class="number">1</span>,   <span class="property">duration</span>: <span class="number">0.5</span>, <span class="property">animation</span>: <span class="string">'fadeInCubic'</span>, <span class="property">type</span>: <span class="string">'out'</span> },
+]</code></pre>
+
+  <h3>Unified Executor</h3>
+  <pre><code><span class="keyword">for</span> (<span class="keyword">const</span> anim <span class="keyword">of</span> layer._animations) {
+  <span class="keyword">const</span> factory = <span class="func">animationRegistry</span>[anim.animation];
+  <span class="keyword">const</span> { generator } = <span class="func">factory</span>({
+    targetNode: layer,
+    duration: anim.duration,
+    type: anim.type,
+    ...anim.options,
+  });
+  generators.<span class="func">push</span>(<span class="func">delay</span>(globalStart + anim.startTime, generator));
+}</code></pre>
+
+  <div class="success-box">
+    <strong>What disappears:</strong> <code>translateCustomAnimationIntoAnimations()</code>, the if/else branching in animateLayers, the distinction between "is this a property path or preset name?"
+  </div>
+</div>
+
+<!-- SLIDE 5: Strategy 1 - Factories in Detail -->
+<div class="slide">
+  <h2>Strategy 1: How Factories Look</h2>
+  <p class="subtitle">Each animation type becomes the same shape</p>
+
+  <div class="grid-2">
+    <div>
+      <p class="label label-blue">SIGNAL ANIMATION (unchanged)</p>
+      <pre><code><span class="comment">// Already a factory today</span>
+<span class="func">createTypewriterChars</span>: (opts) => {
+  <span class="keyword">const</span> progress = <span class="func">createSignal</span>(<span class="number">0</span>);
+  <span class="comment">// bind reactive per-char opacity</span>
+  <span class="comment">// tween progress 0 -> 1</span>
+  <span class="keyword">return</span> { generator: gen() };
+}</code></pre>
+    </div>
+    <div>
+      <p class="label label-pink">SINGLE TWEEN (becomes factory)</p>
+      <pre><code><span class="comment">// Was: { property: 'opacity', params: [1, 2, ease] }</span>
+<span class="func">fadeInCubic</span>: (opts) => ({
+  generator: opts.targetNode
+    .<span class="func">opacity</span>(<span class="number">1</span>, opts.duration, easeInCubic)
+})</code></pre>
+    </div>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <p class="label label-green">CUSTOM ANIMATION (becomes factory)</p>
+    <pre><code><span class="comment">// Was: { property: 'easeFadeAndPosition-1', params: [...] }</span>
+<span class="func">easeFadeAndPosition1</span>: (opts) => {
+  <span class="keyword">function*</span> <span class="func">gen</span>(): <span class="type">ThreadGenerator</span> {
+    <span class="keyword">const</span> baseX = opts.targetNode.<span class="func">position</span>().x;
+    <span class="keyword">const</span> distance = opts.distance ?? <span class="number">200</span>;
+
+    <span class="comment">// Set initial values</span>
+    opts.targetNode.<span class="func">position.x</span>(baseX - distance);
+    opts.targetNode.<span class="func">opacity</span>(<span class="number">0</span>);
+
+    <span class="comment">// Tween to final</span>
+    <span class="keyword">yield*</span> <span class="func">all</span>(
+      opts.targetNode.<span class="func">position.x</span>(baseX, opts.duration, easeInCubic),
+      opts.targetNode.<span class="func">opacity</span>(<span class="number">1</span>, opts.duration, easeInQuint),
+    );
+  }
+  <span class="keyword">return</span> { generator: <span class="func">gen</span>() };
+}</code></pre>
+  </div>
+
+  <div class="highlight-box">
+    <strong>Pattern:</strong> Every factory reads base values at execute-time (after delay), applies initial state, tweens to final state. Self-contained.
+  </div>
+</div>
+
+<!-- SLIDE 6: Strategy 1 Cons -->
+<div class="slide">
+  <h2>Strategy 1: Cons</h2>
+
+  <div class="card highlight-pink" style="margin: 20px 0;">
+    <h3>Con 1: Relative-value logic duplicated per factory</h3>
+    <p>Today <code>translateCustomAnimationIntoAnimations()</code> handles "from = current + offset" generically. With factories, each one writes its own version.</p>
+
+    <div class="side-by-side" style="margin-top: 16px;">
+      <div>
+        <p class="label label-blue">TODAY (generic, one place)</p>
+        <pre><code><span class="comment">// translateCustomAnimation handles ALL presets</span>
+animation.params[<span class="number">0</span>] =
+  layer.<span class="func">position</span>().x + fromTo[<span class="number">0</span>];</code></pre>
+      </div>
+      <div>
+        <p class="label label-pink">STRATEGY 1 (per factory)</p>
+        <pre><code><span class="comment">// Each factory: reads base, applies offset</span>
+<span class="keyword">const</span> baseX = opts.targetNode.<span class="func">position</span>().x;
+opts.targetNode.<span class="func">position.x</span>(baseX - distance);
+<span class="comment">// 30 factories doing the same thing</span></code></pre>
+      </div>
+    </div>
+
+    <p style="margin-top:12px; color:var(--accent-2);"><strong>Risk:</strong> Bug in one factory (forget to read base value) doesn't show in others. Inconsistency creeps in.</p>
+  </div>
+
+  <div class="card highlight-orange" style="margin: 20px 0;">
+    <h3>Con 2: <code>dependsOn</code> easing-inheritance breaks</h3>
+    <p>Current custom animations can declare "opacity inherits easing from position". This is declarative. In a factory, it becomes imperative wiring.</p>
+
+    <div class="side-by-side" style="margin-top: 16px;">
+      <div>
+        <p class="label label-blue">TODAY (declarative)</p>
+        <pre><code>properties: {
+  position: { <span class="property">easing</span>: <span class="string">'easeInQuint'</span> },
+  opacity: { <span class="property">easing</span>: <span class="string">'dependsOn:position'</span> }
+  <span class="comment">// ^ auto-resolved</span>
+}</code></pre>
+      </div>
+      <div>
+        <p class="label label-pink">STRATEGY 1 (manual sync)</p>
+        <pre><code><span class="keyword">const</span> posEasing = easeInQuint;
+<span class="keyword">yield*</span> <span class="func">all</span>(
+  node.<span class="func">position.x</span>(<span class="number">0</span>, dur, posEasing),
+  node.<span class="func">opacity</span>(<span class="number">1</span>, dur, posEasing),
+  <span class="comment">// ^ manually keep in sync</span>
+);</code></pre>
+      </div>
+    </div>
+
+    <p style="margin-top:12px; color:var(--accent-4);"><strong>Risk:</strong> Change easing in one place, forget the other. No compiler warning.</p>
+  </div>
+
+  <div class="highlight-box">
+    <strong>Mitigation:</strong> Extract a <code>buildRelativeTween(node, property, offset, duration, easing)</code> helper. Factories call it instead of duplicating logic. Not perfect but reduces risk.
+  </div>
+</div>
+
+<!-- SLIDE 7: Strategy C Overview -->
+<div class="slide">
+  <h2>Strategy C: Effect-First with Variants</h2>
+  <p class="subtitle">Everything is an "effect". Named variants = curated option sets.</p>
+
+  <div class="highlight-box">
+    <strong>Core idea:</strong> Single flat registry. Each effect has a schema (typed defaults). Variants are frozen option sets for common combos. Overrides for anything custom.
+  </div>
+
+  <h3>Template API</h3>
+  <pre><code><span class="property">_animations</span>: [
+  <span class="comment">// Use a named variant (curated defaults)</span>
+  { <span class="property">effect</span>: <span class="string">'fadeSlide.snappy'</span>, <span class="property">startTime</span>: <span class="number">0</span>, <span class="property">duration</span>: <span class="number">0.6</span>, <span class="property">type</span>: <span class="string">'in'</span> },
+
+  <span class="comment">// Use base effect with custom params</span>
+  { <span class="property">effect</span>: <span class="string">'fadeSlide'</span>, <span class="property">startTime</span>: <span class="number">0</span>, <span class="property">duration</span>: <span class="number">0.6</span>, <span class="property">type</span>: <span class="string">'in'</span>, <span class="property">distance</span>: <span class="number">400</span>, <span class="property">easing</span>: <span class="string">'easeInExpo'</span> },
+
+  <span class="comment">// Signal animation (same interface)</span>
+  { <span class="property">effect</span>: <span class="string">'typewriterChars'</span>, <span class="property">startTime</span>: <span class="number">0.2</span>, <span class="property">duration</span>: <span class="number">0.8</span>, <span class="property">type</span>: <span class="string">'in'</span>, <span class="property">fade</span>: <span class="number">true</span> },
+
+  <span class="comment">// Simple fade (was a raw tween)</span>
+  { <span class="property">effect</span>: <span class="string">'fade'</span>, <span class="property">startTime</span>: <span class="number">3</span>, <span class="property">duration</span>: <span class="number">0.4</span>, <span class="property">type</span>: <span class="string">'out'</span> },
+]</code></pre>
+
+  <h3>Variant System</h3>
+  <div class="grid-2">
+    <div>
+      <pre><code><span class="comment">// 50+ numbered presets collapse into:</span>
+<span class="keyword">const</span> variants = {
+  <span class="string">'fadeSlide.gentle'</span>: {
+    distance: <span class="number">200</span>,
+    easing: <span class="string">'easeInCubic'</span>,
+    fadeEasing: <span class="string">'easeInQuint'</span>
+  },
+  <span class="string">'fadeSlide.snappy'</span>: {
+    distance: <span class="number">200</span>,
+    easing: <span class="string">'easeInQuint'</span>,
+    fadeEasing: <span class="string">'easeInQuint'</span>
+  },
+  <span class="string">'fadeSlide.dramatic'</span>: {
+    distance: <span class="number">400</span>,
+    easing: <span class="string">'easeInExpo'</span>,
+    fadeEasing: <span class="string">'easeInExpo'</span>
+  },
+};</code></pre>
+    </div>
+    <div>
+      <p style="margin-top:20px;"><strong>What this achieves:</strong></p>
+      <ul>
+        <li>~8-10 core effects instead of 50+ numbered presets</li>
+        <li>Each variant is a tested, curated combo</li>
+        <li>Flat named options (no positional <code>params[]</code>)</li>
+        <li>Schema validation on registration</li>
+        <li>Still allows overrides when needed</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Strategy C - Registry -->
+<div class="slide">
+  <h2>Strategy C: Registry Design</h2>
+
+  <pre><code><span class="keyword">interface</span> <span class="type">EffectRegistration</span> {
+  name: <span class="type">string</span>;
+  group: <span class="type">string</span>;
+  schema: <span class="type">EffectSchema</span>;        <span class="comment">// typed defaults + allowed overrides</span>
+  create: (ctx: <span class="type">EffectContext</span>) => <span class="type">ThreadGenerator</span>;
+}
+
+<span class="comment">// Simple tween effect</span>
+<span class="func">registerEffect</span>({
+  name: <span class="string">'fade'</span>,
+  group: <span class="string">'basic'</span>,
+  schema: { from: { default: <span class="number">0</span> }, to: { default: <span class="number">1</span> }, easing: { default: <span class="string">'easeInCubic'</span> } },
+  create: (ctx) => ctx.targetNode.<span class="func">opacity</span>(ctx.to, ctx.duration, ctx.easing),
+});
+
+<span class="comment">// Multi-property composition</span>
+<span class="func">registerEffect</span>({
+  name: <span class="string">'fadeSlide'</span>,
+  group: <span class="string">'composed'</span>,
+  schema: { distance: { default: <span class="number">200</span> }, easing: { default: <span class="string">'easeInCubic'</span> }, fadeEasing: { default: <span class="string">'easeInQuint'</span> } },
+  create: <span class="keyword">function*</span>(ctx) {
+    <span class="keyword">yield*</span> <span class="func">all</span>(
+      ctx.targetNode.<span class="func">position.x</span>(<span class="number">0</span>, ctx.duration, ctx.easing),
+      ctx.targetNode.<span class="func">opacity</span>(<span class="number">1</span>, ctx.duration, ctx.fadeEasing),
+    );
+  },
+});
+
+<span class="comment">// Signal animation (same interface!)</span>
+<span class="func">registerEffect</span>({
+  name: <span class="string">'typewriterChars'</span>,
+  group: <span class="string">'text'</span>,
+  schema: { fade: { default: <span class="number">false</span> } },
+  create: (ctx) => <span class="func">createTypewriterChars</span>({
+    targetNode: ctx.targetNode,
+    duration: ctx.duration,
+    type: ctx.type,
+    fade: ctx.fade,
+  }).generator,
+});</code></pre>
+
+  <div class="success-box">
+    <strong>Key win:</strong> All three types register with the same interface. The executor doesn't know or care what's inside <code>create()</code>.
+  </div>
+</div>
+
+<!-- SLIDE 9: Strategy C Cons -->
+<div class="slide">
+  <h2>Strategy C: Cons</h2>
+
+  <div class="card highlight-pink" style="margin: 20px 0;">
+    <h3>Con 1: Variant Naming Problem</h3>
+    <p>Who decides what "snappy" vs "gentle" means? What happens when you need something in between?</p>
+
+    <pre><code><span class="comment">// Starts clean:</span>
+<span class="string">'fadeSlide.gentle'</span>:   { distance: <span class="number">200</span>, easing: <span class="string">'easeInCubic'</span> }
+<span class="string">'fadeSlide.snappy'</span>:   { distance: <span class="number">200</span>, easing: <span class="string">'easeInQuint'</span> }
+<span class="string">'fadeSlide.dramatic'</span>: { distance: <span class="number">400</span>, easing: <span class="string">'easeInExpo'</span> }
+
+<span class="comment">// Then you need: distance 300, easeInQuart</span>
+<span class="string">'fadeSlide.medium'</span>?          <span class="comment">// vague</span>
+<span class="string">'fadeSlide.snappy-wide'</span>?     <span class="comment">// naming hell</span>
+
+<span class="comment">// Or just override:</span>
+{ effect: <span class="string">'fadeSlide'</span>, distance: <span class="number">300</span>, easing: <span class="string">'easeInQuart'</span> }
+<span class="comment">// ^ but then why do variants exist?</span></code></pre>
+
+    <p style="margin-top:12px; color:var(--accent-2);"><strong>Risk:</strong> Variants either proliferate (naming hell) or get ignored (everyone uses overrides). Either outcome defeats their purpose.</p>
+  </div>
+
+  <div class="card highlight-orange" style="margin: 20px 0;">
+    <h3>Con 2: Schema = False Safety</h3>
+    <p>Schema validates types and ranges, but can't validate "looks good on screen".</p>
+
+    <pre><code><span class="func">registerEffect</span>({
+  name: <span class="string">'slideX'</span>,
+  schema: {
+    distance: { type: <span class="string">'number'</span>, default: <span class="number">1890</span>, min: <span class="number">50</span>, max: <span class="number">2000</span> },
+    easing: { type: <span class="string">'easing'</span>, default: <span class="string">'easeInCubic'</span> },
+  },
+});
+
+<span class="comment">// distance: 1500 passes validation...</span>
+<span class="comment">// but in a 1080p template, 1500px slide looks wrong visually</span>
+<span class="comment">// Schema says "valid". Eyes say "broken".</span></code></pre>
+
+    <p style="margin-top:12px; color:var(--accent-4);"><strong>Risk:</strong> "Validated" creates false confidence. Real quality still requires visual testing.</p>
+  </div>
+</div>
+
+<!-- SLIDE 10: 80/20 Strategy -->
+<div class="slide">
+  <h2>Strategy: 80/20 (Minimal Change)</h2>
+  <p class="subtitle">Don't unify. Clean up what's broken. Keep what works.</p>
+
+  <table>
+    <tr><th>Action</th><th>What It Does</th></tr>
+    <tr><td>Delete unused 48 presets</td><td>Remove dead code in <code>animations/index.ts</code></td></tr>
+    <tr><td>Keep raw tweens</td><td>They work, 100% of templates use them</td></tr>
+    <tr><td>Keep signal animations</td><td>Already clean: named entries via <code>signalAnimation</code> key</td></tr>
+    <tr><td>Add param validation</td><td>Runtime check: easing exists, duration > 0</td></tr>
+    <tr><td>Create helper functions</td><td>Code-level shortcuts for common stagger patterns</td></tr>
+  </table>
+
+  <div class="card highlight-pink" style="margin: 30px 0;">
+    <h3>Con 1: Two Code Paths Forever</h3>
+    <p>Any animation-system-level feature must be implemented twice.</p>
+    <pre><code><span class="comment">// Want to build: animation preview tool</span>
+<span class="keyword">if</span> (anim.signalAnimation) {
+  <span class="comment">// Signal: it's a black-box function</span>
+  <span class="comment">// Can't inspect params declaratively</span>
+  <span class="comment">// Can't preview without running it</span>
+} <span class="keyword">else</span> {
+  <span class="comment">// Tween: can read property, target, duration</span>
+  <span class="comment">// Easy to build timeline visualization</span>
+}
+<span class="comment">// ^ every new tool hits this fork</span></code></pre>
+  </div>
+
+  <div class="card highlight-orange" style="margin: 20px 0;">
+    <h3>Con 2: Zero Discoverability</h3>
+    <p>No way to ask "what animations are available?"</p>
+    <pre><code><span class="comment">// New template: "I want fade + slide left"</span>
+<span class="comment">// Where do you look?</span>
+<span class="comment">// → Open other templates, find similar patterns</span>
+<span class="comment">// → Copy-paste params manually</span>
+<span class="comment">// → No autocomplete, no list, no docs</span>
+
+<span class="comment">// With a registry:</span>
+registry.<span class="func">list</span>()
+<span class="comment">// → ['fade', 'slideX', 'fadeSlide', 'typewriterChars', ...]</span>
+<span class="comment">// → each has schema: what options, what defaults</span></code></pre>
+  </div>
+</div>
+
+<!-- SLIDE 11: The Parameterization Paradox -->
+<div class="slide">
+  <h2>The Parameterization Paradox</h2>
+  <p class="subtitle">This challenge applies to BOTH Strategy 1 and Strategy C</p>
+
+  <div class="warning-box" style="margin: 30px 0;">
+    <strong>The question:</strong> If presets/effects accept arbitrary distance, duration, easing, direction as parameters... how is that different from raw tweens? You've just renamed the system.
+  </div>
+
+  <h3>Side by Side</h3>
+  <div class="side-by-side">
+    <div>
+      <p class="label label-green">STRATEGY C</p>
+      <pre><code>{
+  <span class="property">effect</span>: <span class="string">'slideX'</span>,
+  <span class="property">startTime</span>: <span class="number">0</span>,
+  <span class="property">duration</span>: <span class="number">0.6</span> * (pacing + pacingStep),
+  <span class="property">distance</span>: <span class="number">-1080</span>,
+  <span class="property">easing</span>: <span class="string">'easeOutQuint'</span>,
+  <span class="property">type</span>: <span class="string">'in'</span>
+}</code></pre>
+    </div>
+    <div>
+      <p class="label label-pink">CURRENT RAW TWEEN</p>
+      <pre><code>{
+  <span class="property">property</span>: <span class="string">'position.x'</span>,
+  <span class="property">startTime</span>: <span class="number">0</span>,
+  <span class="property">params</span>: [<span class="number">0</span>, <span class="number">0.6</span> * (pacing + pacingStep),
+           <span class="string">'easeOutQuint'</span>],
+  <span class="property">type</span>: <span class="string">'in'</span>,
+  <span class="property">initialValue</span>: <span class="number">-1080</span>
+}</code></pre>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 30px;">What Unification Actually Gives You (if not constraint)</h3>
+
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card highlight-green">
+      <h3>Gets</h3>
+      <ul>
+        <li><strong>Defaults</strong>: don't specify what's common</li>
+        <li><strong>Discoverability</strong>: list available animations</li>
+        <li><strong>One API</strong>: same shape for everything</li>
+        <li><strong>Tooling</strong>: build preview/timeline tools</li>
+        <li><strong>Naming</strong>: intent over implementation</li>
+      </ul>
+    </div>
+    <div class="card highlight-pink">
+      <h3>Does NOT Get</h3>
+      <ul>
+        <li><strong>Constraint</strong>: can't block arbitrary values without breaking use cases</li>
+        <li><strong>Safety</strong>: schema can't validate visual quality</li>
+        <li><strong>Fewer params</strong>: same info still needed</li>
+        <li><strong>Simpler mental model</strong>: still need to know distance, easing, duration</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight-box" style="margin-top: 20px;">
+    <strong>Bottomline:</strong> Unification's real value = defaults + discoverability + unified tooling. NOT constraint or safety.
+  </div>
+</div>
+
+<!-- SLIDE 12: Devil's Advocate Key Finding -->
+<div class="slide">
+  <h2>Critical Finding: Dead Code</h2>
+  <p class="subtitle">The 48 custom animation presets have zero consumers</p>
+
+  <div class="warning-box" style="margin: 30px 0; font-size: 1.1em;">
+    <strong>No template uses the custom animation presets.</strong> 100% of templates use raw property tweens directly. The system being proposed as the unification target... was never adopted.
+  </div>
+
+  <h3>What Templates Actually Do</h3>
+  <pre><code><span class="comment">// Template-103: unique diagonal offsets per element</span>
+{ <span class="property">property</span>: <span class="string">'position'</span>, <span class="property">params</span>: [[<span class="number">0</span>,<span class="number">0</span>], <span class="number">0.6</span>, <span class="string">'easeOutQuint'</span>], <span class="property">initialValue</span>: [<span class="number">-200</span>, <span class="number">-200</span>] }
+{ <span class="property">property</span>: <span class="string">'position'</span>, <span class="property">params</span>: [[<span class="number">0</span>,<span class="number">0</span>], <span class="number">0.6</span>, <span class="string">'easeOutQuint'</span>], <span class="property">initialValue</span>: [<span class="number">200</span>, <span class="number">-120</span>] }
+{ <span class="property">property</span>: <span class="string">'position'</span>, <span class="property">params</span>: [[<span class="number">0</span>,<span class="number">0</span>], <span class="number">0.6</span>, <span class="string">'easeOutQuint'</span>], <span class="property">initialValue</span>: [<span class="number">100</span>, <span class="number">0</span>] }
+
+<span class="comment">// Template-146: computed durations with pacing variable</span>
+{ <span class="property">property</span>: <span class="string">'position.x'</span>, <span class="property">params</span>: [<span class="number">0</span>, <span class="number">0.2</span> * (pacing + pacingStep), <span class="string">'easeOutQuint'</span>] }
+{ <span class="property">property</span>: <span class="string">'position.x'</span>, <span class="property">params</span>: [<span class="number">0</span>, <span class="number">0.4</span> * (pacing + pacingStep), <span class="string">'easeOutQuint'</span>] }
+
+<span class="comment">// Template-136: multi-step choreography (bounce)</span>
+{ <span class="property">property</span>: <span class="string">'position.y'</span>, <span class="property">params</span>: [<span class="number">-100</span>, <span class="number">0.3</span>, <span class="string">'easeOutQuint'</span>] }
+{ <span class="property">property</span>: <span class="string">'position.y'</span>, <span class="property">params</span>: [<span class="number">0</span>, <span class="number">0.3</span>, <span class="string">'easeInQuint'</span>], <span class="property">startTime</span>: <span class="number">0.3</span> }</code></pre>
+
+  <h3 style="margin-top: 30px;">Distances Used Across Templates</h3>
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 12px 0;">
+    <span class="tag tag-pink">-100</span>
+    <span class="tag tag-pink">-200</span>
+    <span class="tag tag-pink">-320</span>
+    <span class="tag tag-pink">-500</span>
+    <span class="tag tag-pink">-580</span>
+    <span class="tag tag-pink">-800</span>
+    <span class="tag tag-pink">-850</span>
+    <span class="tag tag-pink">-1000</span>
+    <span class="tag tag-pink">-1080</span>
+    <span class="tag tag-pink">-1500</span>
+    <span class="tag tag-pink">-1890</span>
+    <span class="tag tag-pink">-1920</span>
+  </div>
+  <p style="color:var(--text-dim);">All unique per-element. Hard to presetify.</p>
+
+  <div class="highlight-box" style="margin-top: 20px;">
+    <strong>Question this raises:</strong> If templates naturally use per-element unique values, does a preset system fit how they're actually authored? Or does it fight the natural workflow?
+  </div>
+</div>
+
+<!-- SLIDE 13: Comparison Matrix -->
+<div class="slide">
+  <h2>Strategy Comparison</h2>
+
+  <table style="margin-top: 30px;">
+    <tr>
+      <th>Dimension</th>
+      <th><span class="tag tag-blue">Strategy 1</span><br>Factory Functions</th>
+      <th><span class="tag tag-green">Strategy C</span><br>Effect + Variants</th>
+      <th><span class="tag tag-orange">80/20</span><br>Minimal</th>
+    </tr>
+    <tr>
+      <td>Unification level</td>
+      <td>Full</td>
+      <td>Full</td>
+      <td>None (2 paths)</td>
+    </tr>
+    <tr>
+      <td>Computed durations</td>
+      <td>Via factory params</td>
+      <td>Via override params</td>
+      <td>Already works</td>
+    </tr>
+    <tr>
+      <td>Unique distances</td>
+      <td>Via factory params</td>
+      <td>Via override params</td>
+      <td>Already works</td>
+    </tr>
+    <tr>
+      <td>Signal animation fit</td>
+      <td>Natural (already factories)</td>
+      <td>Natural (register as effect)</td>
+      <td>Already clean</td>
+    </tr>
+    <tr>
+      <td>Runtime simplification</td>
+      <td>One code path</td>
+      <td>One code path</td>
+      <td>Two paths</td>
+    </tr>
+    <tr>
+      <td>Discoverability</td>
+      <td>Full (registry.list())</td>
+      <td>Full (registry + variants)</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Tooling potential</td>
+      <td>High (uniform interface)</td>
+      <td>High (schema-driven)</td>
+      <td>Limited (two models)</td>
+    </tr>
+    <tr>
+      <td>DX complexity</td>
+      <td>Learn one API</td>
+      <td>Learn one API + variants</td>
+      <td>Status quo</td>
+    </tr>
+    <tr>
+      <td>Over-engineering risk</td>
+      <td>Medium</td>
+      <td>Medium-high</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Main weakness</td>
+      <td>Duplicated base-value logic</td>
+      <td>Variant naming + schema overhead</td>
+      <td>No discoverability, 2 paths</td>
+    </tr>
+  </table>
+</div>
+
+<!-- SLIDE 14: Decision Framework -->
+<div class="slide">
+  <h2>Decision Framework</h2>
+  <p class="subtitle">The answer depends on WHAT problem you're actually solving</p>
+
+  <div style="margin-top: 30px;">
+    <div class="card highlight-blue" style="margin-bottom: 16px;">
+      <h3>"I want AI/tooling to generate templates"</h3>
+      <p style="margin-top:8px;">&rarr; <strong>Strategy C</strong> (constrained, schema-validated, discoverable effects)</p>
+      <p style="color:var(--text-dim); font-size:0.9em;">AI needs a bounded vocabulary. Schema = structured generation target.</p>
+    </div>
+
+    <div class="card highlight-green" style="margin-bottom: 16px;">
+      <h3>"I want one code path and clean architecture"</h3>
+      <p style="margin-top:8px;">&rarr; <strong>Strategy 1</strong> (unified factory registry, Motion Canvas native)</p>
+      <p style="color:var(--text-dim); font-size:0.9em;">Simplest technically. Skip variants, just make everything a factory.</p>
+    </div>
+
+    <div class="card highlight-orange" style="margin-bottom: 16px;">
+      <h3>"Nothing is broken, just messy"</h3>
+      <p style="margin-top:8px;">&rarr; <strong>80/20</strong> (delete dead presets, add validation, keep raw tweens)</p>
+      <p style="color:var(--text-dim); font-size:0.9em;">Pragmatic. Zero risk. Spend time on features instead.</p>
+    </div>
+
+    <div class="card highlight-pink" style="margin-bottom: 16px;">
+      <h3>"I want reusability + building a library of tested animations"</h3>
+      <p style="margin-top:8px;">&rarr; <strong>Strategy 1 or C</strong> (registry = library you grow over time)</p>
+      <p style="color:var(--text-dim); font-size:0.9em;">Either works. C adds variant curation on top. 1 is simpler to start.</p>
+    </div>
+  </div>
+
+  <div class="warning-box" style="margin-top: 20px;">
+    <strong>Key question:</strong> Do you plan to have tooling (AI, visual editor, animation picker) that needs to enumerate available animations? If yes, you need a registry (Strategy 1 or C). If no, 80/20 might be enough.
+  </div>
+</div>
+
+<!-- SLIDE 15: What's Actually at Stake -->
+<div class="slide">
+  <h2>What's Actually at Stake</h2>
+  <p class="subtitle">Separating real value from theoretical purity</p>
+
+  <div class="grid-2" style="margin-top: 30px;">
+    <div>
+      <h3 style="color: var(--accent-3);">Real Value of Unification</h3>
+      <ul style="margin-top: 12px;">
+        <li><strong>Defaults:</strong> new template starts with sane values, only override what's different</li>
+        <li><strong>Discoverability:</strong> "what animations exist?" has an answer</li>
+        <li><strong>One mental model:</strong> everything is an "effect" with a name</li>
+        <li><strong>Tooling foundation:</strong> preview tools, timeline editors, AI generation</li>
+        <li><strong>Consistency:</strong> same animation looks the same across templates</li>
+        <li><strong>Onboarding:</strong> new template = pick from menu, not copy-paste from other templates</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color: var(--accent-2);">NOT Achieved by Unification</h3>
+      <ul style="margin-top: 12px;">
+        <li><strong>Constraint:</strong> can't block bad values without losing flexibility</li>
+        <li><strong>Visual quality:</strong> schema validation != looks good</li>
+        <li><strong>Fewer decisions:</strong> still need to choose distance, easing, duration</li>
+        <li><strong>Bug prevention:</strong> current system doesn't have animation bugs</li>
+        <li><strong>Speed:</strong> copy-paste from another template is fast enough today</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="vs-divider"><span>SO</span></div>
+
+  <div class="highlight-box">
+    <strong>The honest trade:</strong> Unification is an investment in future tooling and consistency. It doesn't fix a current bug. Its value scales with: (a) number of templates you'll create, (b) whether non-human authors (AI) will create animations, (c) whether you'll build animation tooling.
+  </div>
+</div>
+
+<!-- SLIDE 16: Recommended Path -->
+<div class="slide">
+  <h2>Recommended Path Forward</h2>
+
+  <div style="margin-top: 20px;">
+    <h3>If unifying: Strategy 1 (Factory Functions)</h3>
+    <p style="color:var(--text-dim); margin-bottom: 20px;">Simpler than C, avoids variant naming problem, Motion Canvas native idiom</p>
+
+    <div class="card" style="margin-bottom: 20px;">
+      <h3>Step 1: Foundation</h3>
+      <ul>
+        <li>Create <code>animationRegistry</code> (Map&lt;string, factory&gt;)</li>
+        <li>Register existing signal animations (already factories)</li>
+        <li>Add compat shim: old format falls through to current logic</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom: 20px;">
+      <h3>Step 2: Core Effects</h3>
+      <ul>
+        <li>Convert top 5-8 most-used patterns into named factories</li>
+        <li>Extract <code>buildRelativeTween()</code> helper to avoid duplication</li>
+        <li>New templates use <code>animation: 'name'</code> format</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom: 20px;">
+      <h3>Step 3: Grow Organically</h3>
+      <ul>
+        <li>Add factories as you create new templates</li>
+        <li>Old templates don't need rewriting (compat shim)</li>
+        <li>Delete dead <code>customAnimations</code> array</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="success-box" style="margin-top: 20px;">
+    <strong>Key principle:</strong> Don't pre-build 50 factories. Start with the registry + compat shim + 5 core effects. Let the library grow from real needs.
+  </div>
+
+  <div class="highlight-box" style="margin-top: 16px;">
+    <strong>If NOT unifying:</strong> Delete the 48 dead presets. Add runtime validation (easing string exists, duration > 0). Keep raw tweens + signal animations as-is. Move on.
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="prevSlide()">&larr; Prev</button>
+  <span class="counter"><span id="current">1</span> / <span id="total">16</span></span>
+  <button onclick="nextSlide()">Next &rarr;</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let currentSlide = 0;
+
+  function showSlide(n) {
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (n + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+    document.getElementById('current').textContent = currentSlide + 1;
+    document.getElementById('total').textContent = slides.length;
+  }
+
+  function nextSlide() { showSlide(currentSlide + 1); }
+  function prevSlide() { showSlide(currentSlide - 1); }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+  });
+</script>
+
+</body>
+</html>
