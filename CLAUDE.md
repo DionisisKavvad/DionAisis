@@ -24,6 +24,16 @@ Active workstreams live in `projects/`. Each has its own folder with a `README.m
 
 Every project README has a `- **Type:**` line (`work` or `personal`) as the first metadata field. A summary table of all projects lives at `projects/INDEX.md`. Update both the README and the INDEX row when status, type, or key date changes.
 
+## Reports
+When Dionisis says "γράψε μου report" (or any variation), write a report file:
+
+- **Filename:** `YYYY-MM-DD-<slug>.md` (date prefix, descriptive slug)
+- **Location:** `projects/<project-name>/reports/` inside the relevant project folder
+- **If the project is unclear:** ask explicitly which project the report belongs to, or if it's a generic report
+- **Generic reports** (rare): save in `reports/` at the repo root
+
+Create the `reports/` subfolder if it doesn't exist yet.
+
 ## Tools Connected
 - VS Code, Claude Code, GitHub, iTerm (local dev)
 - No MCP servers connected yet. If that changes, note it in `context/work.md`.
