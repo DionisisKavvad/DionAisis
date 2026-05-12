@@ -260,7 +260,29 @@ AWS_PROFILE=equalityAdmin node scripts/scrape-execution-report.js 12
 
 ---
 
-## 10. Σημειώσεις
+## 10. SQS message refresh (retention save)
+
+SQS retention = 14 days. Τα messages μπήκαν στο queue στις αρχές Μαΐου, οπότε θα αρχίσουν να σβήνονται αυτόματα πριν προλάβει ο scraper να τα επεξεργαστεί όλα.
+
+**Λύση:** drain + re-enqueue ολόκληρο το shuffle queue. Δημιουργήθηκε `scripts/refresh-sqs-messages.js`:
+
+1. Διαβάζει όλα τα messages (batches x10, WaitTimeSeconds 5)
+2. Σώζει backup σε JSON αρχείο τοπικά (safety net)
+3. Σβήνει κάθε message μετά το read
+4. Ξαναστέλνει όλα τα messages στο ίδιο queue (fresh retention)
+
+```bash
+cd scrape-the-greek-ecommerce-v2
+AWS_PROFILE=equalityAdmin node scripts/refresh-sqs-messages.js
+```
+
+**Αποτέλεσμα:** 9,209 messages drained και re-enqueued. Retention timer reset (14 μέρες από 2026-05-12). Ο scraper συνέχισε κανονικά, τράβηξε ~35 messages μέσα σε λίγα λεπτά μετά το refresh.
+
+Αν χρειαστεί ξανά πριν τελειώσει το processing, τρέχει το ίδιο script.
+
+---
+
+## 11. Σημειώσεις
 
 - `bestprice-curl-fixed` αφαιρέθηκε. Ο `bestprice-curl` (original) τρέχει κανονικά (51/51 success rate στο 12h window).
 - 0 bans scraping και στα δύο marketplaces. Τα "ban" problems που βλέπαμε παλιότερα ήταν infrastructure issues (βλ. report 2026-05-11).
