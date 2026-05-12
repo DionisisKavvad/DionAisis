@@ -2,10 +2,11 @@
 
 Bird's-eye view of all active workstreams. Each row links to the project's own `README.md`. The `Type` here must match the `- **Type:**` line inside each README.
 
-**Totals:** 8 work, 6 personal
+**Totals:** 9 work, 6 personal
 
 | Project | Type | Status | Key date |
 |---|---|---|---|
+| [aws-customer-io](./aws-customer-io/README.md) | work | Active | none |
 | [brief-localhost](./brief-localhost/README.md) | work | Active | none |
 | [claude-code-stuff](./claude-code-stuff/README.md) | personal | Active | none |
 | [content-engine](./content-engine/README.md) | personal | Active | 2026-05-03 |
