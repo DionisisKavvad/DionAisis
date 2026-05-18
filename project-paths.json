@@ -1,0 +1,21 @@
+{
+  "_comment": "Maps local code paths -> DionAi project slug. Used by user-level CLAUDE.md to auto-load project context. Longest-prefix-match wins. Update when adding new projects with local code. Source of truth: 'Code:' field in each projects/<slug>/README.md.",
+  "paths": {
+    "/Users/dionisis/Projects/aws-customer-io": "aws-customer-io",
+    "/Users/dionisis/Projects/brief-localhost": "brief-localhost",
+    "/Users/dionisis/Projects/Business development/scrape-the-greek-ecommerce-v2": "greek-ecommerce",
+    "/Users/dionisis/Projects/Business development/scrape-greek-ecommerce-client": "greek-ecommerce",
+    "/Users/dionisis/Projects/Business development/scrape-facebook-ads": "scrape-facebook-ads",
+    "/Users/dionisis/Projects/Business development/scrape-facebook-posts": "scrape-facebook-posts",
+    "/Users/dionisis/Projects/hero-wars": "hero-wars",
+    "/Users/dionisis/Projects/job-manager": "job-manager",
+    "/Users/dionisis/Projects/mcps/servers/gmail": "gmail-mcp",
+    "/Users/dionisis/Projects/my-youtube-insight-curator": "youtube-insights",
+    "/Users/dionisis/Projects/Paramythas": "paramythas",
+    "/Users/dionisis/Projects/Platform/aws-microservices": "platform",
+    "/Users/dionisis/Projects/Platform/landing-page": "platform",
+    "/Users/dionisis/Projects/Platform/new-signup": "platform",
+    "/Users/dionisis/Projects/Platform/platform-client-v2": "platform",
+    "/Users/dionisis/Projects/video-templates": "video-templates"
+  }
+}
