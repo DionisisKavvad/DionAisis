@@ -2,7 +2,22 @@
 
 **Date:** 2026-05-14
 **Component:** `text-color.service.ts` > `setupReactiveTextColor`
-**Status:** Diagnosed, fix pending
+**Status:** RESOLVED 2026-05-14 via headless scene clone (Option D, beyond the original 3 candidates)
+
+## Resolution (2026-05-14)
+
+Λύθηκε όχι μέσω των τριών αρχικών approaches (skip-first-fire / snapshot-compare / external trigger), αλλά με headless scene clone:
+
+- Προστέθηκε `headlessColorMode` flag στην in-scene `createEffect` (line ~870 του `text-color.service.ts`). Όταν `true`, ο effect κάνει early return → δεν γράφει στο FILL_MAP, δεν corruptάρει το cache.
+- Η platform setάρει το flag σε `true` στο initial player setup + σε κάθε template change (`motion-canvas.component.ts`).
+- Το computation των σωστών χρωμάτων στο restTime έγινε responsibility ενός δεύτερου scene instance (headless clone) που τρέχει frame-by-frame χωρίς render, με isolated FILL_MAP swap.
+
+Round-trip latency: ~40ms. Πλήρες implementation report: `2026-05-14-headless-color-implementation.md`.
+
+---
+
+## Original diagnosis (kept for history)
+
 
 ## Context
 

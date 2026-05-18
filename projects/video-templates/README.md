@@ -224,8 +224,10 @@ Review signal animations and handle the case where a signal animation and a regu
 ### Text color: FILL_MAP key collision across products (FIXED 2026-04-21)
 `buildTextKey` in `text-color-map.service.ts` originally built keys as `progenitorKey::textKey` where `progenitorKey` fell back to `'root'` when the progenitor had no `context` or `_id`. Product progenitors typically lack both, so all products shared the same key (e.g. `root::price`). During recalculate, each product correctly computed its own color, but the last product's write to the FILL_MAP overwrote all previous ones. During playback, every product read that last value. Fix: when `progenitorKey` would fall back to `'root'`, derive a `product-{index}` key from the progenitor's position among its `_type === 'Product'` siblings (filtering out non-product children of the Products container). Keys now read `product-0::price`, `product-1::price`, etc. Discovered via template-81 (sliding background shapes, different text colors per product). Validated across all templates.
 
-### Text color: targeted invalidation on direct edits
-The frame-based guard (2026-04-21) computes text colors once at rest position and caches them in FILL_MAP. Known limitation: when the user edits text properties (font size, content) via direct node update in Angular (no MC recalculate), the text may grow to overlap a different background, but the cached color won't update. Fix: on direct text edit, invalidate that text's FILL_MAP key + trigger a one-shot re-compute. This works because the user can only select/edit elements at rest position (if animating, the element isn't selectable), so the re-compute frame is correct by definition.
+### Text color: targeted invalidation on direct edits (RESOLVED 2026-05-14)
+The frame-based guard (2026-04-21) computes text colors once at rest position and caches them in FILL_MAP. Known limitation: when the user edits text properties (font size, content) via direct node update in Angular (no MC recalculate), the text may grow to overlap a different background, but the cached color won't update.
+
+**Resolved 2026-05-14 via headless scene clone:** όταν αλλάζει text layout property, η platform τρέχει ένα δεύτερο scene instance (no render) με isolated FILL_MAP, 120 frames, διαβάζει τα σωστά χρώματα στο restTime και τα εφαρμόζει με `node.fill()` στο real player. Round-trip ~40ms. Lifted και το createEffect bug (in-scene effect πλέον no-op-άρει όταν `headlessColorMode = true`). Implementation report: `reports/2026-05-14-headless-color-implementation.md`. Original bug diagnosis: `reports/2026-05-14-createeffect-font-recalculate-bug.md`.
 
 ### Text color strategies: document and decide
 Catalog the three text color strategies that have been tried and decide the final approach:
@@ -235,7 +237,13 @@ Catalog the three text color strategies that have been tried and decide the fina
 
 All three share the ahead-of-time problem: text color depends on rendered backgrounds, so it can't be decided before the template runs. **Solved (2026-04-21):** MC's recalculate-cycle pattern runs an invisible pass through all frames before playback. The frame-based guard (deferred effect per text, fires at in-animation rest time) computes the correct color during recalculate when backgrounds are at their animated positions. Results are cached in a generation-aware FILL_MAP with per-product unique keys. During playback, texts read from the map instantly. No separate analysis scene, no build-time pre-computation needed.
 
+**Extended 2026-05-14:** για direct text-property edits από το UI (όπου δεν τρέχει full recalculate), προστέθηκε headless scene clone path. Δες παραπάνω section.
+
 Remaining TODO: document which strategy is the final one and how the grayscale fallback interacts with the palette strategy.
+
+**Planned deprecation (2026-05-15):** `color-groups` strategy θα αφαιρεθεί τελείως. Έχει διπλό `syncGeneration` call με διαφορετικά generation strings (`processColorGroups` then `calculateTextColors`) που σβήνει τα δικά του writes στο FILL_MAP / REST_TIME_MAP. Δεν διορθώνεται γιατί η στρατηγική θα φύγει. Μένουν `contrast-aware` (κύρια) και `legacy`.
+
+**Planned deprecation (2026-05-15) — setupReactiveShapeColor path:** στο current `contrast-aware` strategy το shape coloring το αναλαμβάνει το `processContrastAwareGroups` με `color-group-N` keys. Το `setupReactiveShapeColor` (στο `text-color.service.ts`, Phase 1 του legacy `calculateTextColors`) ποτέ δεν τρέχει σε contrast-aware. Επιβιώνει μόνο για `legacy` strategy και για zero-palette fallback. Όταν αφαιρεθεί η `legacy` στρατηγική, αφαιρείται μαζί και αυτό το path. Παράπλευρα κλείνει και το theoretical key collision μεταξύ shape/text μέσω του κοινού `buildTextKey`.
 
 ## Progress (2026-04-23): Hierarchy-Preserving Constraint Solver
 
