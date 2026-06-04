@@ -2,7 +2,7 @@
 
 Bird's-eye view of all active workstreams. Each row links to the project's own `README.md`. The `Type` here must match the `- **Type:**` line inside each README.
 
-**Totals:** 9 work, 6 personal
+**Totals:** 10 work, 6 personal
 
 | Project | Type | Status | Key date |
 |---|---|---|---|
@@ -10,6 +10,7 @@ Bird's-eye view of all active workstreams. Each row links to the project's own `
 | [brief-localhost](./brief-localhost/README.md) | work | Active | none |
 | [claude-code-stuff](./claude-code-stuff/README.md) | personal | Active | none |
 | [content-engine](./content-engine/README.md) | personal | Active | 2026-05-03 |
+| [eshop-analyzer](./eshop-analyzer/README.md) | work | Active | none |
 | [gmail-mcp](./gmail-mcp/README.md) | personal | Live | 2026-04-19 (last ship) |
 | [greek-ecommerce](./greek-ecommerce/README.md) | work | Tracked | none |
 | [hero-wars](./hero-wars/README.md) | personal | Planning | none |
