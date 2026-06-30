@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto / Memecoin Trading — Master Report</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2128; --ink:#e6edf3; --muted:#9da7b3;
+    --line:#2d333b; --accent:#7c9cff; --green:#3fb950; --red:#f85149; --amber:#d29922;
+    --chip:#21262d;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 22px 120px;}
+  header.hero{padding:34px 0 18px;border-bottom:1px solid var(--line);margin-bottom:28px;}
+  h1{font-size:30px;margin:0 0 8px;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:15px;margin:0}
+  .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:var(--chip);border:1px solid var(--line);border-radius:999px;
+    padding:4px 12px;font-size:13px;color:var(--muted)}
+  h2{font-size:23px;margin:46px 0 12px;padding-top:14px;border-top:1px solid var(--line)}
+  h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:8px}
+  h3{font-size:18px;margin:26px 0 8px;color:#cdd6e0}
+  h4{font-size:15px;margin:18px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{background:#0b0f14;border:1px solid var(--line);border-radius:5px;padding:1px 6px;
+    font:13.5px/1.4 "SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#a5d6ff}
+  strong{color:#fff}
+  .lead{font-size:17px;color:#cdd6e0;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:18px 20px}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:24px 0}
+  .toc h4{margin-top:0}
+  .toc ol{columns:2;column-gap:30px}
+  @media(max-width:640px){.toc ol{columns:1}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .callout{border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:15px}
+  .warn{background:rgba(248,81,73,.08);border-color:rgba(248,81,73,.4)}
+  .warn b{color:#ff8b82}
+  .ok{background:rgba(63,185,80,.08);border-color:rgba(63,185,80,.4)}
+  .ok b{color:#5fd06f}
+  .note{background:rgba(210,153,34,.08);border-color:rgba(210,153,34,.4)}
+  .note b{color:#e3b341}
+  .tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:6px;
+    text-transform:uppercase;letter-spacing:.4px;vertical-align:middle}
+  .t-legit{background:rgba(63,185,80,.15);color:#5fd06f;border:1px solid rgba(63,185,80,.4)}
+  .t-risky{background:rgba(210,153,34,.15);color:#e3b341;border:1px solid rgba(210,153,34,.4)}
+  .t-avoid{background:rgba(248,81,73,.15);color:#ff8b82;border:1px solid rgba(248,81,73,.4)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:#cdd6e0;font-weight:600}
+  tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+  .step{display:flex;gap:14px;margin:12px 0;align-items:flex-start}
+  .step .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--accent);color:#0d1117;
+    font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .gloss{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 0}
+  .kpi{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0}
+  .kpi .b{flex:1;min-width:150px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px}
+  .kpi .b .v{font-size:22px;font-weight:800;color:#fff}
+  .kpi .b .l{font-size:12.5px;color:var(--muted)}
+  hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+  .small{font-size:13.5px;color:var(--muted)}
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+  .pill-list{list-style:none;padding:0}
+  .pill-list li{padding:8px 0;border-bottom:1px dashed var(--line)}
+  .pill-list li:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;margin-bottom:18px;background:#161b22;border:1px solid #2d333b;border-radius:10px;font-size:13.5px">
+  <a href="2026-06-29-trading-research-hub.html" style="color:#7c9cff;text-decoration:none;font-weight:600">📊 Hub</a>
+  <span style="color:#2d333b">|</span>
+  <span style="color:#e6edf3;font-weight:600">🪙 Crypto</span>
+  <span style="color:#2d333b">|</span>
+  <a href="2026-06-29-polymarket-master-report.html" style="color:#9da7b3;text-decoration:none">🎯 Polymarket →</a>
+</nav>
+
+<header class="hero">
+  <h1>🪙 Crypto / Memecoin Trading — Master Report</h1>
+  <p class="sub">Όλα όσα κάναμε και βρήκαμε, μαζεμένα, σε απλή γλώσσα.</p>
+  <div class="meta-row">
+    <span class="chip">📅 Frame: 25 Ιουν 2026</span>
+    <span class="chip">🔬 Research: 42 agents, 7 domains</span>
+    <span class="chip">✅ 30 tools/groups verified</span>
+    <span class="chip">🎯 Solana memecoins · Axiom</span>
+    <span class="chip">💰 $1-3k · ⏱ 1-2h/μέρα</span>
+  </div>
+</header>
+
+<p class="lead">
+Ξεκίνησες θέλοντας να μπεις πιο <strong>συστηματικά</strong> στο crypto trading. Κάναμε δύο πράγματα:
+πρώτα μια συνέντευξη για να ξεκαθαρίσουμε <strong>τι ακριβώς θες και πού είσαι</strong> (το «frame»),
+και μετά ένα βαθύ research με πολλούς AI agents που έβγαλε <strong>5 πρακτικούς οδηγούς</strong>.
+Αυτό το report τα ενώνει όλα και σου εξηγεί κάθε έννοια απλά.
+</p>
+
+<div class="toc">
+  <h4>Περιεχόμενα</h4>
+  <ol>
+    <li><a href="#what">Τι κάναμε βήμα-βήμα</a></li>
+    <li><a href="#frame">Πού είσαι σήμερα (το frame)</a></li>
+    <li><a href="#findings">Τα 5 ευρήματα που αλλάζουν το παιχνίδι</a></li>
+    <li><a href="#system">Το σύστημα trading (D3)</a></li>
+    <li><a href="#tools">Τα εργαλεία (D2)</a></li>
+    <li><a href="#curriculum">Το 3μηνο πλάνο μάθησης (D1)</a></li>
+    <li><a href="#network">Το network (D4)</a></li>
+    <li><a href="#security">Ασφάλεια (D5)</a></li>
+    <li><a href="#honest">Η ωμή αλήθεια</a></li>
+    <li><a href="#next">Τι κάνουμε τώρα</a></li>
+  </ol>
+</div>
+
+<!-- ============ 1 ============ -->
+<h2 id="what"><span class="num">1.</span>Τι κάναμε βήμα-βήμα</h2>
+<div class="grid">
+  <div class="card">
+    <h4>Βήμα 1 — Συνέντευξη (frame)</h4>
+    <p>Σου έκανα 11 στοχευμένες ερωτήσεις για να βγάλουμε από το κεφάλι σου τι θες, πού είσαι, και τι σου λείπει. Κάθε απάντηση αποθηκεύτηκε σε αρχείο ώστε να μη χαθεί τίποτα.</p>
+    <p class="small">📄 <code>brainstorms/2026-06-25-crypto-systematic-education.md</code></p>
+  </div>
+  <div class="card">
+    <h4>Βήμα 2 — Βαθύ research</h4>
+    <p>Έτρεξα ένα workflow με <strong>42 AI agents</strong>: 7 έψαξαν το web (καθένας ένα θέμα), μετά άλλοι <strong>επαλήθευσαν αντιπαλικά</strong> κάθε εργαλείο/ομάδα/τακτική (μήπως είναι scam, διαφημιστικό ή ξεπερασμένο), και στο τέλος συνθέσανε 5 οδηγούς.</p>
+  </div>
+  <div class="card">
+    <h4>Βήμα 3 — 5 deliverables</h4>
+    <p>Βγήκαν 5 αρχεία: σύστημα trading (D3), εργαλεία (D2), πλάνο μάθησης (D1), network (D4), ασφάλεια (D5). Όλα στο φάκελο <code>reports/</code>.</p>
+  </div>
+  <div class="card">
+    <h4>Βήμα 4 — Meta updates</h4>
+    <p>Πρόσθεσα το crypto στις <strong>τρέχουσες προτεραιότητες</strong> ως «παράλληλο track» (1-2h/μέρα, να μην ρίξει τα deadlines των άλλων projects) και κατέγραψα την <strong>απόφαση</strong> στο decision log.</p>
+  </div>
+</div>
+
+<!-- ============ 2 ============ -->
+<h2 id="frame"><span class="num">2.</span>Πού είσαι σήμερα (το frame)</h2>
+<div class="kpi">
+  <div class="b"><div class="v">2-3 μήνες</div><div class="l">ενεργό trading</div></div>
+  <div class="b"><div class="v" style="color:var(--red)">-10%</div><div class="l">καθαρό αποτέλεσμα</div></div>
+  <div class="b"><div class="v">$1-3k</div><div class="l">κεφάλαιο ρίσκου</div></div>
+  <div class="b"><div class="v">1-2h</div><div class="l">χρόνος/μέρα</div></div>
+</div>
+
+<table>
+  <tr><th>Διάσταση</th><th>Πού είσαι</th></tr>
+  <tr><td><strong>Στόχος</strong></td><td>Να χτίσεις ένα πραγματικό edge στα memecoins, και μετά να το <strong>αυτοματοποιήσεις</strong> με bots/agents. (Συνδέεται με τον γενικό σου στόχο: να αυτοματοποιείς χειρωνακτική δουλειά.)</td></tr>
+  <tr><td><strong>Πεδίο</strong></td><td>Solana memecoins, στο terminal Axiom (+ Phantom wallet).</td></tr>
+  <tr><td><strong>Πώς αποφασίζεις τώρα</strong></td><td>Με «πεποίθηση», όχι με γραπτούς κανόνες. Αυτό είναι το βασικό κενό.</td></tr>
+  <tr><td><strong>Δυνατά σου</strong></td><td>Ψυχολογία/πειθαρχία, βασική κατανόηση του Solana.</td></tr>
+  <tr><td><strong>Κενά σου</strong></td><td>🔴 <strong>Exits / σωστό κλείσιμο & μέγεθος θέσης</strong> και 🔴 <strong>εργαλεία</strong> (τα δύο μεγαλύτερα). Μετά: ανάγνωση on-chain, ανάγνωση «narrative».</td></tr>
+  <tr><td><strong>Network</strong></td><td>Σχεδόν μηδέν (καμία ομάδα, λίγα wallets). Θες πρόσβαση σε alpha + να μάθεις από traders.</td></tr>
+  <tr><td><strong>Πηγές σήμερα</strong></td><td>Μόνο YouTube (η πιο αργή πηγή).</td></tr>
+</table>
+
+<div class="callout note">
+<b>Η θεωρία σου για το edge (όπως την είπες):</b> ζούμε σε έναν κόσμο «δύο ταχυτήτων» και μπορείς να κερδίσεις όντας στη <em>γρήγορη πλευρά</em>, εις βάρος όσων είναι πιο πίσω. Και ακόμα κι αν βγεις στα ίσα, <strong>κερδίζεις κατανόηση</strong> για το πώς δουλεύει η «μηχανή του χρήματος». Δηλαδή το κέρδος σου είναι διπλό: λεφτά + γνώση.
+</div>
+
+<!-- ============ 3 ============ -->
+<h2 id="findings"><span class="num">3.</span>Τα 5 ευρήματα που αλλάζουν το παιχνίδι</h2>
+
+<div class="card">
+<h3>① Το -10% σου ΔΕΝ φταίει που διαλέγεις λάθος coins. Φταίει το πώς ΒΓΑΙΝΕΙΣ.</h3>
+<p>Το νούμερο ένα λάθος που χάνει λεφτά δεν είναι η επιλογή. Είναι το <strong>«round-tripping»</strong>: ανεβαίνει το coin σου ×10, αλλά δεν πουλάς, και ξαναγυρνάει στο ×2 και μετά στα ίδια. Κρατάς, ελπίζεις, και το κέρδος εξαφανίζεται.</p>
+<p class="gloss">Γι' αυτό όλο το πλάνο ξεκινάει από το <strong>κλείσιμο (exits) και το μέγεθος θέσης</strong>, όχι από το πώς βρίσκεις coins.</p>
+</div>
+
+<div class="card">
+<h3>② Τα έξοδα (fees) μπορούν μόνα τους να σε κάνουν χαμένο.</h3>
+<p>Κάθε γύρος αγορά+πώληση κοστίζει περίπου <strong>3-7%</strong> (προμήθεια πρωτοκόλλου + προμήθεια terminal + «priority fee» + slippage). Σε μικρά ποσά αυτό είναι βαρύ φόρος: ένα coin πρέπει να ανέβει <strong>~+10% μόνο για να βγεις στα ίσα</strong>.</p>
+<p class="gloss">Συμπέρασμα: <strong>λιγότερα και πιο σίγουρα trades</strong>. Το πολύ μπες-βγες σε ρημάζει.</p>
+<p class="small">slippage = η διαφορά τιμής ανάμεσα σε αυτό που νόμιζες ότι θα πάρεις και σε αυτό που πήρες, επειδή η αγορά είναι «ρηχή». priority fee = έξτρα που πληρώνεις για να περάσει γρήγορα η συναλλαγή σου.</p>
+</div>
+
+<div class="card">
+<h3>③ Το edge σου είναι «πληροφορία + σύστημα», ΟΧΙ ταχύτητα.</h3>
+<p>Με 1-2 ώρες τη μέρα δεν μπορείς να νικήσεις τα sniper bots που μπαίνουν σε χιλιοστά του δευτερολέπτου. Το ρεαλιστικό σου πλεονέκτημα: να είσαι πιο <strong>καλά πληροφορημένος και πιο πειθαρχημένος</strong> από το αργό πλήθος, δουλεύοντας <strong>ασύγχρονα</strong> (παίρνεις ειδοποίηση → αποφασίζεις γρήγορα), όχι κολλημένος στην οθόνη.</p>
+</div>
+
+<div class="card">
+<h3>④ Το ίδιο το Axiom έχει «μαύρο σημείο» (Φεβ 2026).</h3>
+<p>Ο ερευνητής ZachXBT αποκάλυψε ότι υπάλληλοι του Axiom χρησιμοποιούσαν εσωτερικά dashboards για να «βλέπουν» χρήστες και να μπαίνουν πριν απ' αυτούς (~$400k σε 10+ μήνες). <strong>Τα λεφτά σου είναι ασφαλή</strong> (μη-custodial = εσύ κρατάς τα κλειδιά), αλλά υπόθεσε ότι <strong>βλέπουν τι κάνεις</strong>.</p>
+<p class="gloss">Πρακτικά: μικρά μεγέθη, ειδικό «καιγόμενο» wallet, και μην εμπιστεύεσαι το «smart money» που σου δείχνει μέσα στην εφαρμογή.</p>
+</div>
+
+<div class="card">
+<h3>⑤ Ξεκίνα με 0€ εργαλεία. Πλήρωσε μόνο αφού αποδειχθεί το edge.</h3>
+<p>Υπάρχει πλήρες δωρεάν stack που καλύπτει όλο τον κύκλο. <strong>Μην βάλεις συνδρομή πάνω σε ένα σύστημα που χάνει.</strong> Πρώτα κατέγραψε αποτελέσματα, μετά (αν είναι θετικά) πλήρωσε για αναβάθμιση.</p>
+</div>
+
+<!-- ============ 4 ============ -->
+<h2 id="system"><span class="num">4.</span>Το σύστημα trading (D3) — ο σκελετός</h2>
+<p>Ένα <strong>γραπτό σύνολο κανόνων</strong> που το τρέχεις με το χέρι τώρα, και αυτοματοποιείς κομμάτι-κομμάτι αργότερα. Κάθε κανόνας είναι «αν Χ τότε Υ», ώστε να γίνει εύκολα κώδικας.</p>
+
+<h3>4.1 Μέγεθος θέσης (το πραγματικό «stop»)</h3>
+<p>Στα memecoins, τα «stop-loss» συχνά δεν πιάνουν (η αγορά είναι πολύ ρηχή, η τιμή χάνεται). Άρα το <strong>μέγεθος της θέσης ΕΙΝΑΙ το stop σου</strong>: υπέθεσε ότι κάθε θέση μπορεί να πάει στο μηδέν.</p>
+<ul>
+  <li><strong>Ρίσκο ανά trade: 1-1.5%</strong> του κεφαλαίου (σε $2k ≈ $20-30).</li>
+  <li><strong>Μέγιστο σε ένα coin: 5%</strong> του κεφαλαίου.</li>
+  <li><strong>Μέγιστες ανοιχτές θέσεις: 5-10.</strong> Πολλά μικρά στοιχήματα, ποτέ συγκέντρωση.</li>
+  <li>Η θέση σου να είναι μικρή σε σχέση με τη ρευστότητα, ώστε <strong>η δική σου πώληση να μη ρίχνει την τιμή</strong>.</li>
+</ul>
+<p class="gloss">Το «Kelly criterion» (μαθηματικός τύπος για μέγεθος) ΔΕΝ είναι για τώρα. Χρειάζεσαι 50-100 καταγεγραμμένα trades πρώτα. Μέχρι τότε, σταθερό 1-1.5%.</p>
+
+<h3>4.2 Φίλτρο εισόδου — δύο λίστες σε κάθε υποψήφιο coin</h3>
+<p class="small">Τα φίλτρα <strong>μειώνουν τις ζημιές</strong> (μια μελέτη: ~56% λιγότερες). ΔΕΝ σου λένε «αγόρασε». Είναι φίλτρο για να πετάς τα σκουπίδια.</p>
+<div class="callout warn">
+<b>NO-GATE (αν ισχύει ΕΝΑ, απορρίπτεις — χωρίς συζήτηση):</b>
+<ul style="margin-top:8px">
+<li>Το «mint authority» δεν έχει ακυρωθεί → ο δημιουργός μπορεί να τυπώσει άπειρα κέρματα και να σε ρίξει.</li>
+<li>Το «freeze authority» δεν έχει ακυρωθεί → μπορούν να <strong>κλειδώσουν το wallet σου ώστε να μην πουλάς</strong>.</li>
+<li>Η ρευστότητα (LP) δεν είναι κλειδωμένη/καμένη → μπορούν να την τραβήξουν (κλασικό «rug»).</li>
+<li>Honeypot: αν προσομοιώσεις «αγορά μετά πώληση» και δεν βγαίνει πώληση → παγίδα, δεν πουλιέται.</li>
+<li>Φόρος πώλησης &gt; 0 ή «μεταβλητός» → μπορούν να σου βάλουν 99% φόρο όταν πας να πουλήσεις.</li>
+<li>Top-10 κάτοχοι &gt; 40% του supply, ή ένα συνδεδεμένο «cluster» wallets &gt; 15-20%.</li>
+<li>Ρευστότητα &lt; ~$100k, ή σχέση αξίας/ρευστότητας &gt; 50× (σημάδι χειραγώγησης).</li>
+</ul>
+</div>
+<p class="gloss"><strong>rug / rug pull</strong> = ο δημιουργός εξαφανίζει τη ρευστότητα και μένεις με άχρηστο coin. <strong>honeypot</strong> = coin που αγοράζεις αλλά δεν μπορείς να πουλήσεις. <strong>bundle / cluster</strong> = ο δημιουργός φτιάχνει 20-50 wallets που αγοράζουν μαζί, ώστε να φαίνεται «μοιρασμένο» ενώ είναι όλα δικά του. Γι' αυτό κοιτάς το σύμπλεγμα (cluster), όχι το κάθε wallet ξεχωριστά.</p>
+<div class="callout ok">
+<b>YES-CHECKLIST (μετά το «graduation», θες τα περισσότερα να ισχύουν):</b>
+<ul style="margin-top:8px">
+<li>Wallet δημιουργού &lt; 5% του supply, με δημόσια εξήγηση.</li>
+<li>Ο αριθμός κατόχων ανεβαίνει οργανικά (όχι ψεύτικα wallets).</li>
+<li>«Smart money» wallets μαζεύουν επί μέρες ΚΑΙ κρατάνε στις πτώσεις.</li>
+<li>Ταιριάζει σε ένα «narrative» (θέμα) που τρέχει εδώ και βδομάδες.</li>
+<li>Εμφανίζεται σε 3+ σελίδες ανακάλυψης (DexScreener/Birdeye/DexTools) μέσα σε 48h.</li>
+</ul>
+</div>
+<p class="gloss"><strong>graduation</strong> = όταν ένα νέο coin «αποφοιτά» από την αρχική φάση (π.χ. pump.fun) και περνά σε κανονικό DEX. Πριν την αποφοίτηση = πιο νωρίς αλλά πιο επικίνδυνο. Μετά = πιο καθαρό αλλά πιο αργά. <strong>Διάλεξε ΜΙΑ προσέγγιση και μείνε σταθερός.</strong></p>
+
+<h3>4.3 Σκάλα εξόδου / κατοχύρωσης κέρδους (η κύρια διόρθωση)</h3>
+<p>Διάλεξε <strong>ΜΙΑ</strong> σκάλα, γράψε τα ακριβή νούμερα, και βάλε τις εντολές πώλησης <strong>τη στιγμή που μπαίνεις</strong>. Ποτέ αυτοσχεδιασμός.</p>
+<table>
+  <tr><th>Πότε</th><th>Τι κάνεις</th><th>Γιατί</th></tr>
+  <tr><td>Στο <strong>×2</strong></td><td>Πούλα το 50%</td><td>Πήρες πίσω το αρχικό σου → τώρα παίζεις με «τα λεφτά του σπιτιού», φεύγει το άγχος.</td></tr>
+  <tr><td>Στο <strong>×5</strong></td><td>Πούλα 25% του υπολοίπου</td><td>Κατοχυρώνεις κέρδος.</td></tr>
+  <tr><td>Στο <strong>×10</strong></td><td>Πούλα 25% του υπολοίπου</td><td>Κατοχυρώνεις κι άλλο.</td></tr>
+  <tr><td><strong>Moonbag</strong> 5-10%</td><td>Κράτα με «trailing stop»</td><td>Αφήνεις ένα μικρό κομμάτι για το σενάριο «στο φεγγάρι».</td></tr>
+</table>
+<p class="gloss"><strong>moonbag</strong> = το μικρό κομμάτι που κρατάς μήπως το coin κάνει τεράστια κίνηση. <strong>trailing stop</strong> = αυτόματη πώληση αν η τιμή πέσει Χ% από την κορυφή της — «ακολουθεί» την τιμή προς τα πάνω.</p>
+<div class="callout note">
+<b>Σημαντικό:</b> τα νούμερα (×2, ×5, 30% trail) είναι <strong>αρχικές υποθέσεις</strong>, όχι αλήθειες. Το trail 20-30% μάλλον είναι πολύ σφιχτό για memecoins (σε πετάει με τον θόρυβο). Ξεκίνα πιο φαρδιά (~30%) και διόρθωσέ το από το δικό σου ημερολόγιο. Καλό νέο: το <strong>Axiom υποστηρίζει αυτόματη πώληση + trailing stop</strong>, οπότε αυτό αυτοματοποιείται αμέσως.
+</div>
+
+<h3>4.4 Σήματα εξόδου (επίπεδο ειδοποιήσεων)</h3>
+<p>Αν χτυπήσει ΕΝΑ «σκληρό» on-chain σήμα → πούλα τον moonbag <strong>τώρα</strong>, χωρίς να περιμένεις επιβεβαίωση.</p>
+<div class="grid">
+  <div class="card"><h4 style="color:var(--red)">Σκληρά (on-chain)</h4>
+  <ul><li>Πέφτει η ρευστότητα ενώ η τιμή κρατάει = οι devs βγάζουν λεφτά (αργό rug).</li><li>Ένα wallet/cluster μοιράζει στο retail = φάση διανομής.</li><li>Τα «smart money» wallets που παρακολουθείς πουλάνε.</li><li>Σταματάει η αύξηση κατόχων ενώ η τιμή ανεβαίνει = ψεύτικος όγκος.</li></ul></div>
+  <div class="card"><h4 style="color:var(--amber)">Μαλακά (μόνο επιβεβαίωση)</h4>
+  <ul><li>Παραβολική άνοδος 500-1000% χωρίς ανάσα = εξάντληση.</li><li>Διασημότητα/influencer το προωθεί στην κορυφή = δημιουργία «exit liquidity» (πούλα ΜΕΣΑ στο hype, μην κυνηγάς).</li><li>Η κοινότητα μιλάει μόνο για «price targets».</li></ul></div>
+</div>
+<p class="gloss"><strong>exit liquidity</strong> = όταν εσύ είσαι ο «κορόιδο αγοραστής» στον οποίο πουλάνε οι έξυπνοι για να βγουν. Η αξία αυτής της λίστας: μετατρέπει το «πότε πουλάω;» σε κανόνα, όχι συναίσθημα.</p>
+
+<h3>4.5 Κανόνες κατά του «tilt» (πειθαρχία με δομή, όχι με θέληση)</h3>
+<ul>
+  <li>Καμία είσοδος χωρίς προ-γραμμένη έξοδο.</li>
+  <li>Μέγιστα trades/μέρα (π.χ. 3-5).</li>
+  <li>Υποχρεωτικό «cooldown» μετά από κάθε ζημιά πριν την επόμενη είσοδο.</li>
+  <li><strong>Ποτέ averaging down</strong> σε χαμένη θέση.</li>
+  <li><strong>Ο πιο δυνατός μηχανισμός:</strong> βάζε στο trading wallet ΜΟΝΟ το ρίσκο της εβδομάδας. Το υπόλοιπο σε άλλο/cold wallet. <em>Το υπόλοιπο του wallet ΕΙΝΑΙ το όριο ζημιάς σου.</em></li>
+</ul>
+<p class="gloss"><strong>tilt</strong> = όταν χάνεις την ψυχραιμία σου μετά από ζημιά και κάνεις βιαστικά/εκδικητικά trades. <strong>averaging down</strong> = αγοράζεις κι άλλο ενώ πέφτει, ελπίζοντας να «βγεις» — ο κλασικός τρόπος να χάσεις περισσότερα.</p>
+
+<h3>4.6 Ημερολόγιο trades (η «πύλη δεδομένων»)</h3>
+<p>Κατέγραψε τα πρώτα 50-100 trades πριν μεγαλώσεις μέγεθος ή αυτοματοποιήσεις. Απλό spreadsheet, όχι app. Γράφε: coin, μέγεθος, ποια κριτήρια ίσχυαν, narrative, πώς βγήκες, <strong>R-multiple</strong>, και <strong>έξοδα</strong> (ώστε το κέρδος να είναι καθαρό).</p>
+<p class="gloss"><strong>R-multiple</strong> = πόσες φορές το ρίσκο σου κέρδισες/έχασες. Αν ρισκάρεις $20 και κερδίσεις $60, αυτό είναι +3R. Στόχος: ο μέσος νικητής να είναι <strong>≥ 3× ο μέσος χαμένος</strong>. <strong>Αν ο μέσος νικητής &lt; μέσος χαμένος, το πρόβλημα είναι οι ΕΞΟΔΟΙ σου, όχι οι επιλογές.</strong></p>
+
+<h3>4.7 Καθημερινή ρουτίνα (1-2h, ασύγχρονα)</h3>
+<div class="step"><div class="n">1</div><div><strong>Σκαν narrative (~15')</strong> — ποια θέματα τρέχουν/πεθαίνουν.</div></div>
+<div class="step"><div class="n">2</div><div><strong>Έλεγχος ειδοποιήσεων (~20-30')</strong> — από τα wallets που παρακολουθείς· τρέξε το NO-gate (~30'' το καθένα). Απόρριψε τα περισσότερα.</div></div>
+<div class="step"><div class="n">3</div><div><strong>Απόφαση στους επιζώντες (~15')</strong> — YES-checklist + narrative. Αν περνάει, μπες με σωστό μέγεθος και βάλε ΑΜΕΣΩΣ τη σκάλα εξόδου.</div></div>
+<div class="step"><div class="n">4</div><div><strong>Διαχείριση ανοιχτών (~10')</strong> — τσέκαρε σήματα εξόδου, αλλιώς άσε τις εντολές να δουλέψουν.</div></div>
+<div class="step"><div class="n">5</div><div><strong>Ημερολόγιο (~10')</strong> — κατέγραψε ό,τι έκλεισε.</div></div>
+<div class="step"><div class="n">6</div><div><strong>Εβδομαδιαία</strong> — ανανέωσε τη λίστα wallets, μάζεψε κέρδη στο cold wallet.</div></div>
+
+<!-- ============ 5 ============ -->
+<h2 id="tools"><span class="num">5.</span>Τα εργαλεία (D2) — το $0 stack</h2>
+<p><strong>Όλο το ξεκίνημα κοστίζει $0/μήνα.</strong> Μην πληρώσεις τίποτα μέχρι η δωρεάν έκδοση να αποδείξει ότι προσθέτει edge στο ημερολόγιό σου.</p>
+
+<h3>Tier 1 — Το δωρεάν stack (ξεκίνα εδώ)</h3>
+<table>
+  <tr><th>Εργαλείο</th><th>Τι κάνει (απλά)</th><th>Verdict</th></tr>
+  <tr><td><strong>RugCheck</strong></td><td>Έλεγχος ασφάλειας coin πριν αγοράσεις (mint/freeze authority, LP, honeypot). Δωρεάν API.</td><td><span class="tag t-legit">legit</span></td></tr>
+  <tr><td><strong>Bubblemaps</strong></td><td>Οπτικός χάρτης που δείχνει αν τα wallets είναι «μπερδεμένα» μεταξύ τους (cluster/insider).</td><td><span class="tag t-legit">legit</span></td></tr>
+  <tr><td><strong>Kolscan</strong></td><td>Βρίσκεις ποια wallets αξίζει να παρακολουθείς (λίστα με πραγματικό PnL).</td><td><span class="tag t-legit">legit*</span></td></tr>
+  <tr><td><strong>Cielo Finance</strong></td><td>Σου στέλνει <strong>ειδοποίηση στο Telegram</strong> όταν κινούνται τα wallets που παρακολουθείς. Δωρεάν = 10 Solana wallets.</td><td><span class="tag t-legit">legit</span></td></tr>
+  <tr><td><strong>Solana Tracker</strong></td><td>Μετράει το δικό σου PnL (κέρδος/ζημιά). Τροφοδοτεί το ημερολόγιο.</td><td><span class="tag t-legit">legit</span></td></tr>
+  <tr><td><strong>SolSniffer</strong></td><td>Δεύτερος scanner ασφάλειας (πάντα χρησιμοποίησε ≥2).</td><td><span class="tag t-legit">legit</span></td></tr>
+</table>
+<p class="small">*Kolscan: ανήκει πλέον στην Pump.fun (σύγκρουση συμφερόντων· τα νούμερα PnL μπορεί να μην είναι ακριβή). Χρήση μόνο για ανακάλυψη, διασταύρωσε αλλού. <strong>Μην αγοράσεις το token $KOLSCAN.</strong></p>
+
+<h3>Tier 2 — Εκτέλεση (το terminal που ήδη έχεις)</h3>
+<p><strong>Axiom</strong> <span class="tag t-risky">risky (trust)</span>: εδώ εκτελείς. Έχει αυτόματη πώληση + trailing stop (χτυπάει ακριβώς το κενό σου στις εξόδους) και φίλτρα «Pulse» όπου κωδικοποιείς το NO-gate. <strong>Λειτουργικά καλό, αλλά πρόσεξε στο trust</strong> (το σκάνδαλο Φεβ 2026): μικρά μεγέθη, ειδικό burner wallet. Πραγματικές προμήθειες ~0.75-0.95% ανά πλευρά (όχι 0.5% που λένε).</p>
+
+<h3>Tier 3+4 — Πληρωμένα & «φτιάξ' το μόνος» (μετά)</h3>
+<ul>
+  <li><strong>Cielo Pro</strong> ($59/μήνα ετήσια) → περισσότερα wallets, ΜΟΝΟ αφού το δωρεάν δείξει edge.</li>
+  <li><strong>3μηνο build:</strong> <code>Helius webhook → μικρή serverless function → Telegram</code>. Όταν κινείται ένα παρακολουθούμενο wallet, παίρνεις ping. Κανόνας: <strong>«αγόρασε τα δεδομένα (Helius), φτιάξε τη λογική (το φίλτρο σου)»</strong>. Το ruleset είναι το asset σου, μην το αναθέτεις.</li>
+</ul>
+
+<div class="callout warn">
+<b>ΑΠΕΦΥΓΕ (το είπε η επαλήθευση):</b>
+<ul style="margin-top:8px">
+<li><span class="tag t-avoid">avoid</span> <strong>Πληρωμένες ομάδες «alpha calls» (Telegram/Discord).</strong> Είναι φτιαγμένες για να σου πουλάνε στην κορυφή. Μέχρι να δεις το call, είσαι εσύ το exit liquidity. Οι «καλύτερες ομάδες» λίστες είναι διαφημιστικό περιεχόμενο.</li>
+<li><span class="tag t-risky">risky</span> <strong>GMGN copy-trade</strong> — καλό μόνο για εύρεση/παρακολούθηση wallets, ΟΧΙ τυφλό αντιγραφικό trade (latency + γίνεσαι exit liquidity). Μόνο επίσημο domain + burner.</li>
+<li><span class="tag t-avoid">avoid</span> <strong>Sniper bots / volume bots / τυχαία GitHub «trading bots».</strong> Η ταχύτητα δεν είναι το edge σου, και κάποια bots <strong>αδειάζουν wallets</strong>. Ποτέ seed phrase σε μη-ελεγμένο κώδικα.</li>
+</ul>
+</div>
+
+<h3>Το ξεκίνημα (αυτή τη βδομάδα, $0)</h3>
+<p><strong>Ο κύκλος:</strong> Cielo ping → RugCheck + SolSniffer + Bubblemaps (~1') → αν περάσει το NO-gate, αποφασίζεις → μπες στο Axiom με προ-ρυθμισμένη σκάλα εξόδου → κατέγραψε. Τρέξε το ~1 μήνα, μέτρα κέρδος <strong>καθαρό από έξοδα</strong> πριν πληρώσεις ή αυτοματοποιήσεις.</p>
+
+<!-- ============ 6 ============ -->
+<h2 id="curriculum"><span class="num">6.</span>Το 3μηνο πλάνο μάθησης (D1)</h2>
+<p>Χτυπάει πρώτα τα μεγάλα κενά (εξόδους/μέγεθος, εργαλεία), μετά on-chain ανάγνωση, μετά narrative.</p>
+
+<h3>Μήνας 1 — Κλείσε τα φονικά κενά</h3>
+<ul>
+  <li><strong>Βδομάδα 1:</strong> Έξοδοι & μέγεθος. Μάθε το «expectancy»: <code>(Win% × Μέσο Κέρδος) − (Loss% × Μέση Ζημιά)</code>. Με 40-50% επιτυχία είσαι κερδοφόρος ΑΝ ο μέσος νικητής ≥ 3× ο χαμένος. <strong>Το edge είναι η ασυμμετρία, όχι η ακρίβεια.</strong> Γράψε τη σκάλα εξόδου σου.</li>
+  <li><strong>Βδομάδα 2:</strong> Κανόνες κατά tilt + η πραγματικότητα των fees (3-7%). Λιγότερα, πιο σίγουρα trades.</li>
+  <li><strong>Βδομάδα 3:</strong> Ελάχιστα εργαλεία + ξεκίνα ημερολόγιο. Βάλε τη σκάλα ως εντολές στο Axiom.</li>
+  <li><strong>Βδομάδα 4:</strong> Φίλτρο ασφάλειας NO-gate (RugCheck + 2ος scanner + honeypot sim).</li>
+</ul>
+
+<h3>Μήνας 2 — On-chain ανάγνωση + «synthetic network»</h3>
+<ul>
+  <li><strong>Βδομάδες 5-6:</strong> Φίλτρα εισόδου (NO-gate + YES-checklist). Μάθε για τα <strong>bundles</strong> (η κυρίαρχη απάτη του 2026) και πώς να βλέπεις clusters.</li>
+  <li><strong>Βδομάδες 7-8:</strong> Φτιάξε τη λίστα 8-15 αξιολογημένων wallets (το «synthetic network», βλ. ενότητα 7). Όχι τυφλό copy-trade.</li>
+</ul>
+
+<h3>Μήνας 3 — Narrative + απόδειξη edge + πλάνο αυτοματισμού</h3>
+<ul>
+  <li><strong>Βδομάδες 9-10:</strong> Narrative/meta ως «κύριο πλαίσιο». Μην ρωτάς «είναι καλό αυτό το coin;» αλλά «<strong>ποιο θέμα τρέχει, νωρίς ή αργά, ταιριάζει;</strong>». Τα narratives γεννιούνται <strong>upstream</strong> (TikTok/4chan/Reddit) → μετά crypto-twitter → τελευταίο το YouTube. <strong>Υποβάθμισε το YouTube.</strong></li>
+  <li><strong>Βδομάδες 11-12:</strong> Υπολόγισε win-rate και μέσο κέρδος/ζημιά καθαρά από έξοδα. <strong>Αν ο μέσος νικητής &lt; χαμένος → φτιάξε τις εξόδους.</strong> Σχεδίασε το v0.1 αυτοματισμού.</li>
+</ul>
+
+<div class="callout ok">
+<b>Checkpoint 1 μήνα:</b> γραπτό ruleset + ημερολόγιο που τρέχει + δωρεάν stack live + ασφάλεια έτοιμη. <em>Το μέτρο επιτυχίας ΔΕΝ είναι το PnL — είναι: τήρησες τους κανόνες σου;</em><br><br>
+<b>Checkpoint 3 μήνες:</b> ~50-100 trades καταγεγραμμένα· ξέρεις win-rate και μέσο κέρδος/ζημιά. <em>Test edge: μέσος νικητής ≥ ~3× χαμένος και θετικό expectancy καθαρά από έξοδα; Αν ναι → έχεις edge να αυτοματοποιήσεις. Αν όχι → έμαθες πού είναι η τρύπα, με ελάχιστο κόστος.</em>
+</div>
+
+<!-- ============ 7 ============ -->
+<h2 id="network"><span class="num">7.</span>Το network (D4)</h2>
+<div class="callout note">
+<b>Η μεγάλη ιδέα:</b> Το network σου ΔΕΝ είναι μια ομάδα ανθρώπων. Είναι μια <strong>επιλεγμένη λίστα από αποδεδειγμένα on-chain wallets που στέλνουν ειδοποίηση στο τηλέφωνό σου.</strong> Το on-chain ιστορικό δεν ψεύδεται και δεν διαλέγεται επιλεκτικά. Αυτό είναι το «synthetic network».
+</div>
+
+<h3>Πώς αξιολογείς ένα WALLET (7 σημεία)</h3>
+<p>Αυτό είναι ο γραπτός σου κανόνας για το network. Πέρνα κάθε υποψήφιο <strong>πριν</strong> μπει στη λίστα. Είναι φίλτρο <strong>απόρριψης</strong>, όχι «μαντείο νικητών».</p>
+<ol>
+  <li>30+ trades σε 60+ μέρες (κόβει την τυχερή σερί).</li>
+  <li>Win rate &gt; 60% (αλλά βάρυνε περισσότερο το realized PnL).</li>
+  <li>Το <strong>realized PnL</strong> (κέρδη που όντως πήρε) είναι η πλειοψηφία, όχι «στα χαρτιά».</li>
+  <li>Max drawdown &lt; 40%.</li>
+  <li>Όχι 90%+ συγκέντρωση σε ένα coin.</li>
+  <li>Φίλτρο wash-trade (ψεύτικος όγκος): απόρριψε αν &gt;40% του όγκου σε ένα coin + γύροι &lt;10'.</li>
+  <li>Σταθερή δραστηριότητα (όχι «κοιμισμένο μετά ξαφνικά ενεργό» = πιθανός insider).</li>
+</ol>
+<p>+ Δύο έξτρα για memecoins: <strong>κόψε τα «fast-flip» wallets</strong> (μπες-βγες σε δευτερόλεπτα — δεν τα προλαβαίνεις) και τα bots. Στόχευσε wallets που <strong>κρατάνε λίγο παραπάνω</strong>.</p>
+<p class="gloss"><strong>drawdown</strong> = πόσο έπεσε το κεφάλαιο από την κορυφή του. <strong>realized vs paper PnL</strong> = κέρδος που όντως ρευστοποίησες vs κέρδος «στα χαρτιά» που μπορεί να εξανεμιστεί.</p>
+
+<h3>Πώς δουλεύει το synthetic network</h3>
+<ul>
+  <li>Κράτα <strong>8-15</strong> αξιολογημένα wallets (όχι 20-50 = κατακλυσμός ειδοποιήσεων).</li>
+  <li>Δράσε <strong>μόνο όταν ΠΟΛΛΑ wallets συγκλίνουν</strong> στο ίδιο coin/θέμα (= narrative σχηματίζεται). Η σύγκλιση είναι το edge, όχι το κυνήγι μιας μεμονωμένης κίνησης.</li>
+  <li><strong>Ποτέ τυφλό copy.</strong> Οι ορατές συναλλαγές είναι ήδη 10-20% αργά → γίνεσαι exit liquidity.</li>
+  <li>Σε κάθε ειδοποίηση, ρώτα «<strong>γιατί αγόρασε αυτό το wallet;</strong>» → έτσι μαθαίνεις (κλείνεις τα κενά σου σε narrative/μηχανική).</li>
+</ul>
+
+<h3>Πώς αξιολογείς μια ΟΜΑΔΑ (γρήγορο φίλτρο)</h3>
+<table>
+  <tr><th>🚩 Σε εκμεταλλεύεται (απέφυγε)</th><th>✅ Σε διδάσκει (ΟΚ)</th></tr>
+  <tr><td>Όλα είναι τιμές/tickers</td><td>Συζητά μηχανική, ρευστότητα, εξόδους</td></tr>
+  <tr><td>Μόνο screenshots κερδών, σβήνουν ζημιές</td><td>Ποστάρουν και ζημιές, αυτο-διορθώνονται</td></tr>
+  <tr><td>Βιασύνη, «επόμενο 100×», εγγυήσεις</td><td>Καμία πίεση, καμία εγγύηση</td></tr>
+  <tr><td>Πυραμίδα referral, token-gate είναι το προϊόν</td><td>Δωρεάν/διαφανές, η αξία είναι η συζήτηση</td></tr>
+</table>
+<p class="gloss">Το καλύτερο φίλτρο αξιοπιστίας: <strong>βάζει η πηγή πραγματικά λεφτά στο call μέσα σε 24h και το δείχνει on-chain;</strong></p>
+
+<!-- ============ 8 ============ -->
+<h2 id="security"><span class="num">8.</span>Ασφάλεια (D5) — προαπαιτούμενο</h2>
+<p>Αγγίζεις νέα, μη-ελεγμένα contracts κάθε μέρα. Αυτό που σε ξεκληρίζει ΔΕΝ είναι τα αργά rugs — είναι: (1) μια κακή υπογραφή που αδειάζει το wallet, (2) ένα coin που δεν πουλιέται, (3) να κρατάς τις οικονομίες σου στο ίδιο wallet που τραντάρεις memecoins.</p>
+<div class="callout warn">
+<b>Δύο κανόνες-κλειδιά:</b> (1) Το trading wallet σου είναι <strong>«καιγόμενο» (burner)</strong>, ποτέ ο θησαυρός σου. (2) Η ευπάθεια είναι σχεδόν πάντα <strong>ΕΣΥ που υπογράφεις</strong>, όχι «hack». Διάβαζε κάθε συναλλαγή πριν υπογράψεις.
+</div>
+<ol class="pill-list">
+  <li><strong>1. Διαχωρισμός wallets (κάν' το πρώτο):</strong> Cold vault (hardware, Ledger/Trezor — δεν αγγίζει ποτέ memecoin) → Funding wallet → Hot wallet με <strong>μόνο το ρίσκο της εβδομάδας</strong>.</li>
+  <li><strong>2. Seed phrase:</strong> ΠΟΤΕ ψηφιακά (όχι screenshot/cloud/Notion). Το Axiom κρατά τη φράση στο <strong>browser local storage</strong> → καθάρισμα browser = ολική απώλεια. <strong>Κάνε backup offline σήμερα.</strong></li>
+  <li><strong>3. Σκαν πριν αγοράσεις (~30''):</strong> RugCheck σε κάθε coin. Ποτέ μην αγοράζεις απρόσμενο airdrop.</li>
+  <li><strong>4. Τη στιγμή της υπογραφής:</strong> διάβασε το simulation του Phantom. Απόρριψε κάθε «approve all tokens».</li>
+  <li><strong>5. Μηνιαία:</strong> κάνε «revoke» παλιές εγκρίσεις (Revoke.cash / Famous Fox), αποσύνδεσε άχρηστα dApps. <strong>Μόνο μέσω bookmarks</strong> (υπάρχουν ψεύτικα revoker sites).</li>
+  <li><strong>6. Ψεύτικα sites/airdrops:</strong> μπες στα sites μόνο από bookmarks, ποτέ από διαφημίσεις/αναζήτηση. Κάθε απρόσμενο airdrop = εχθρικό.</li>
+  <li><strong>7. Address poisoning:</strong> ποτέ μην αντιγράφεις διεύθυνση από το ιστορικό· επιβεβαίωσε ολόκληρη· κάνε test-send πριν μεγάλη μεταφορά.</li>
+  <li><strong>8. Bots:</strong> ποτέ seed σε bot που δεν είναι client-side non-custodial. Όταν αυτοματοποιήσεις: audited APIs + burner wallet.</li>
+</ol>
+
+<!-- ============ 9 ============ -->
+<h2 id="honest"><span class="num">9.</span>Η ωμή αλήθεια (μην την ξεχνάς)</h2>
+<div class="callout warn">
+<ul style="margin:0">
+<li><strong>~98% των pump.fun launches αποτυγχάνουν. Οι περισσότεροι traders χάνουν.</strong> Αυτό είναι αρνητικό-EV έδαφος. Ένα ruleset ΔΕΝ φτιάχνει edge — <strong>μειώνει τη μεταβλητότητα και κάνει τα αποτελέσματά σου μετρήσιμα</strong>, ώστε να μάθεις αν όντως έχεις edge.</li>
+<li><strong>Τα νούμερα (×2, 1.5%, 30%, κλπ.) είναι αρχικές υποθέσεις</strong> από πηγές του 2026, όχι επικυρωμένες για σένα. Δουλειά του v0.1: να τα συντονίσεις από το δικό σου ημερολόγιο.</li>
+<li><strong>Πολλές «τακτικές» έρχονται από SEO/affiliate blogs και vendor marketing.</strong> Οι λίστες εργαλείων είναι συστηματικά «λαδωμένες» (bots πληρώνουν έως 35% προμήθεια εφ' όρου ζωής). Τα εργαλεία εδώ προτείνονται με ανεξάρτητα κριτήρια, με τα flags σημειωμένα.</li>
+<li><strong>Το ρεαλιστικό σου κέρδος μήνα-1 είναι ΓΝΩΣΗ + διαδικασία, όχι λεφτά.</strong> Και αυτό ταιριάζει με τον δικό σου στόχο: να καταλάβεις τη μηχανή.</li>
+</ul>
+</div>
+
+<!-- ============ 10 ============ -->
+<h2 id="next"><span class="num">10.</span>Τι κάνουμε τώρα</h2>
+<div class="grid">
+  <div class="card"><h4>Άμεσα (αυτή τη βδομάδα)</h4>
+    <ul><li>Στήσε το $0 stack (Kolscan → Cielo → RugCheck/Bubblemaps → Axiom → spreadsheet).</li><li>Ασφάλεια: burner wallet + backup της Axiom φράσης offline.</li><li>Γράψε το v0.1 ruleset (σκάλα εξόδου + μέγεθος + anti-tilt).</li></ul>
+  </div>
+  <div class="card"><h4>Μπορώ να σου φτιάξω</h4>
+    <ul><li>Έτοιμο <strong>trade-log template</strong> (spreadsheet).</li><li><strong>NO-gate checklist</strong> σε μορφή που τσεκάρεις γρήγορα.</li><li>Scope για το <strong>3μηνο automation</strong> (Helius → Telegram) ως μικρό project.</li></ul>
+  </div>
+</div>
+<p class="small">Ανοιχτά θέματα: το <strong>DionAI-brain knowledge graph</strong> (για να μπαίνουν εκεί τα crypto learnings — δεν υπάρχει ακόμα) · <strong>φορολογία/νομικά Ελλάδα</strong> (αργότερα).</p>
+
+<footer>
+  <p><strong>Πηγές:</strong> κάθε deliverable έχει πλήρη λίστα πηγών (URLs) στο τέλος του. Δες:
+  <code>reports/2026-06-25-crypto-D1..D5</code>. Frame: <code>brainstorms/2026-06-25-crypto-systematic-education.md</code>.</p>
+  <p>Research: workflow «crypto-edge-research», 42 agents, 7 domains, 30 tools/groups/tactics επαληθευμένα αντιπαλικά. · Report: 29 Ιουν 2026.</p>
+</footer>
+
+</div>
+</body>
+</html>

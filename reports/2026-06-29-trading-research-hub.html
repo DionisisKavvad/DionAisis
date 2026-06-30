@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Research Hub — Crypto + Polymarket</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2128; --ink:#e6edf3; --muted:#9da7b3;
+    --line:#2d333b; --accent:#7c9cff; --accent2:#a371f7; --gold:#d4a017; --green:#3fb950; --red:#f85149;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:960px;margin:0 auto;padding:48px 22px 100px;}
+  h1{font-size:32px;margin:0 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:16px;margin:0 0 6px}
+  .meta{color:var(--muted);font-size:13.5px;margin-top:10px}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+  @media(max-width:720px){.cards{grid-template-columns:1fr}}
+  .rcard{display:block;text-decoration:none;color:inherit;background:var(--panel);
+    border:1px solid var(--line);border-radius:16px;padding:24px 22px;transition:.15s;position:relative;overflow:hidden}
+  .rcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .rcard .ico{font-size:34px;margin-bottom:10px}
+  .rcard h2{font-size:21px;margin:0 0 6px}
+  .rcard .tag{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .rcard p{font-size:14.5px;color:#c4ccd6;margin:12px 0 0}
+  .rcard .verdict{font-size:13.5px;margin-top:14px;padding:10px 12px;border-radius:8px;
+    background:var(--panel2);border:1px solid var(--line);color:#cdd6e0}
+  .rcard.crypto{border-top:3px solid var(--gold)}
+  .rcard.poly{border-top:3px solid var(--accent)}
+  .rcard .arrow{position:absolute;top:22px;right:22px;color:var(--muted);font-size:20px}
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:22px 0}
+  .sec h3{margin:0 0 12px;font-size:18px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:#cdd6e0}
+  .mc{color:#ffcf8b}.pm{color:#9ecbff}
+  a.docs{color:var(--accent);text-decoration:none;font-size:13.5px}
+  a.docs:hover{text-decoration:underline}
+  .docrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .docrow a{background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:5px 10px;font-size:12.5px;color:var(--accent);text-decoration:none}
+  .docrow a:hover{border-color:var(--accent)}
+  footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:999px;
+    padding:3px 11px;font-size:12.5px;color:var(--muted);margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>📊 Trading Research Hub</h1>
+  <p class="sub">Δύο βαθιά research projects, ένα σημείο εισόδου.</p>
+  <div class="meta">
+    <span class="pill">$1-3k</span><span class="pill">1-2h/μέρα</span><span class="pill">async</span>
+    <span class="pill">edge → automation</span><span class="pill">dual return: λεφτά + γνώση</span>
+  </div>
+
+  <div class="cards">
+    <a class="rcard crypto" href="2026-06-29-crypto-master-report.html">
+      <span class="arrow">→</span>
+      <div class="ico">🪙</div>
+      <span class="tag">Report 1 · 25-29 Ιουν 2026</span>
+      <h2>Crypto / Memecoin Trading</h2>
+      <p>Solana memecoins σε Axiom. Σύστημα trading, εργαλεία, 3μηνο curriculum, network, ασφάλεια.</p>
+      <div class="verdict"><strong>Verdict:</strong> το -10% σου είναι exit/sizing leak. Φτιάξε εξόδους πρώτα, ξεκίνα $0 stack, edge = info+system async.</div>
+    </a>
+    <a class="rcard poly" href="2026-06-29-polymarket-master-report.html">
+      <span class="arrow">→</span>
+      <div class="ico">🎯</div>
+      <span class="tag">Report 2 · 29 Ιουν 2026</span>
+      <h2>Polymarket / Prediction Markets</h2>
+      <p>Πρόβλεψη εκβάσεων. Mechanics, στρατηγικές, forecasting/calibration, tooling, risk + νομικά Ελλάδα/EU.</p>
+      <div class="verdict"><strong>Verdict:</strong> κάν' το <strong>βασικό</strong> πεδίο (~85/15). Πιο δίκαιο εργαστήριο: ορισμένες πιθανότητες, Kelly+Brier δουλεύουν, maker = $0 fees.</div>
+    </a>
+  </div>
+
+  <div class="sec">
+    <h3>⚖️ Η σύγκριση με μια ματιά</h3>
+    <table>
+      <tr><th>Διάσταση</th><th class="mc">🪙 Memecoins</th><th class="pm">🎯 Polymarket</th></tr>
+      <tr><td>Edge</td><td>narrative + σωστές έξοδοι</td><td>info + <strong>maker execution</strong> + calibration</td></tr>
+      <tr><td>Πιθανότητες / Kelly</td><td>άχρηστα (no odds)</td><td><strong>native</strong> (τιμή = πιθανότητα)</td></tr>
+      <tr><td>Ορίζοντας</td><td>&lt;4h, οθόνη</td><td>εσύ διαλέγεις, async</td></tr>
+      <tr><td>Έξοδα</td><td>3-7% round-trip</td><td>maker $0 / taker 0.75-1.8%</td></tr>
+      <tr><td>Κύριο ρίσκο</td><td>rug / honeypot</td><td>oracle resolution + capital lockup</td></tr>
+      <tr><td>Skill</td><td>μη μεταφέρσιμο, πεθαίνει</td><td><strong>μετρήσιμο, συσσωρεύεται</strong></td></tr>
+      <tr><td>Νομικά</td><td>permissionless (καθαρό)</td><td>fragile (MiCA + gambling, cliff 1/7/26)</td></tr>
+    </table>
+    <p style="font-size:13.5px;color:var(--muted);margin-bottom:0">Κοινό μάθημα και στα δύο: <strong>η ταχύτητα είναι χαμένο παιχνίδι (bot-owned)</strong>· το edge σου = πληροφορία + πειθαρχία· αυτοματοποίησε τη <strong>discipline</strong> πρώτα, όχι το picking.</p>
+  </div>
+
+  <div class="sec">
+    <h3>📄 Όλα τα αναλυτικά deliverables</h3>
+    <p style="font-size:14px;color:var(--muted);margin-top:0">Crypto (D1-D5):</p>
+    <div class="docrow">
+      <a href="2026-06-25-crypto-D3-trading-system-spec.md">D3 · System Spec</a>
+      <a href="2026-06-25-crypto-D2-tooling-infrastructure-map.md">D2 · Tooling</a>
+      <a href="2026-06-25-crypto-D1-curriculum-roadmap.md">D1 · Curriculum</a>
+      <a href="2026-06-25-crypto-D4-network-access-map.md">D4 · Network</a>
+      <a href="2026-06-25-crypto-D5-security-checklist.md">D5 · Security</a>
+    </div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:4px">Polymarket (P1-P6):</p>
+    <div class="docrow">
+      <a href="2026-06-29-polymarket-P1-mechanics-access-primer.md">P1 · Mechanics/Access</a>
+      <a href="2026-06-29-polymarket-P3-memecoin-vs-polymarket-differentiation.md">P3 · Differentiation</a>
+      <a href="2026-06-29-polymarket-P2-strategy-playbook.md">P2 · Strategies</a>
+      <a href="2026-06-29-polymarket-P4-forecasting-calibration-curriculum.md">P4 · Forecasting</a>
+      <a href="2026-06-29-polymarket-P5-tooling-data-automation.md">P5 · Tooling</a>
+      <a href="2026-06-29-polymarket-P6-starter-system-risk-bankroll.md">P6 · System/Risk</a>
+    </div>
+  </div>
+
+  <footer>
+    Research workflows: <code>crypto-edge-research</code> (42 agents) + <code>polymarket-edge-research</code> (45 agents). Frame: <code>brainstorms/2026-06-25-crypto-systematic-education.md</code>. · Hub · 29 Ιουν 2026.
+  </footer>
+
+</div>
+</body>
+</html>

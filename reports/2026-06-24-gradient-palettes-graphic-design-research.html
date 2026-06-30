@@ -1,0 +1,205 @@
+<!DOCTYPE html><html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gradient Παλέττες</title><style>
+  :root {--bg:#fff;--card:#fff;--text:#1a1c20;--muted:#6b7280;--accent:#6d4aff;--accent2:#e0489f;--border:#e6e8ec;--code-bg:#f5f5f8;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%, #f3eeff 0%, transparent 60%), var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:48px 20px 80px;}
+  .wrap{max-width:860px;margin:0 auto;}
+  .hero{border-radius:18px;padding:3px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);margin-bottom:36px;}
+  .hero-inner{background:var(--card);border-radius:15px;padding:28px 32px;}
+  .tag{display:inline-block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  h1{font-size:30px;line-height:1.2;margin:0;background:linear-gradient(135deg,#6d4aff 0%,#9b5cff 50%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  h2{font-size:22px;margin:40px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  h3{font-size:17px;margin:26px 0 10px;color:#5a3fd6;}
+  p{margin:12px 0;}
+  ul,ol{padding-left:22px;} li{margin:6px 0;}
+  a{color:#6d4aff;text-decoration:none;border-bottom:1px solid rgba(109,74,255,.3);word-break:break-word;}
+  a:hover{border-bottom-color:var(--accent2);}
+  strong{color:#111317;}
+  em{color:#5a3fd6;font-style:normal;background:#f3eeff;padding:1px 5px;border-radius:4px;}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font:13.5px/1.5 "SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#b3327f;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px 18px;overflow-x:auto;}
+  pre code{background:none;padding:0;color:#234;}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;}
+  th,td{border:1px solid var(--border);padding:8px 12px;text-align:left;vertical-align:top;} th{background:#faf8ff;}
+  blockquote{border-left:3px solid var(--accent);margin:16px 0;padding:8px 16px;color:#4b5563;background:#faf8ff;border-radius:0 8px 8px 0;}
+  .content > h1:first-child{display:none;}
+  hr{border:none;border-top:1px solid var(--border);margin:32px 0;}
+  .meta{color:var(--muted);font-size:13px;margin-top:10px;}
+</style></head>
+<body><div class="wrap"><div class="hero"><div class="hero-inner"><span class="tag">Θεωρητική Έρευνα · 2026-06-24</span><h1>Gradient Παλέττες στο Graphic Design</h1><div class="meta">Case study: eshop brief · style-tags · hypothesis evaluation · validated</div></div></div><div class="content"><h1>Gradient Παλέττες στο Graphic Design — Θεωρητική Έρευνα</h1>
+<blockquote>
+<p><strong>Σκοπός:</strong> Να ξεκαθαρίσει τι σημαίνει "gradient" όταν εμφανίζεται ως style-tag σε μια παλέττα ή ως πρόταση σε ένα design brief για eshop, και τι ακριβώς συνεπάγεται αυτό για το τελικό design. Τα ευρήματα πέρασαν από adversarial validation (refuter + steelman + judge, 22 agents, 7 claims).</p>
+</blockquote>
+<h2>Συμπεράσματα (πρώτα τα πρώτα)</h2>
+<p><strong>1. Το "gradient" δεν είναι ίδιου είδους tag με τα warm/cold/bright/dark/pastel/vintage/monochromatic.</strong><br />
+Τα εφτά αυτά απαντούν "<strong>ποια</strong> χρώματα" (hue/saturation/value). Το gradient απαντά "<strong>πώς</strong> απλώνονται στον χώρο" (rendering/application). Είναι <strong>orthogonal, συνδυάσιμος</strong> άξονας: μπορείς να έχεις warm-gradient, dark-gradient, monochromatic-gradient. Συνδυάζεται με τα άλλα αντί να ανταγωνίζεται, άρα κάθεται σε διαφορετικό άξονα. <strong>Πρακτική συνέπεια:</strong> στο tag system σου το "gradient" δεν θα έπρεπε να ζει στον ίδιο πίνακα με τα color-content tags, ή τουλάχιστον να αντιμετωπίζεται ως ξεχωριστή διάσταση.</p>
+<p><strong>2. Μια λίστα από hex δεν είναι από μόνη της gradient. Γίνεται, ντετερμινιστικά, με δύο προσθήκες.</strong><br />
+Της λείπουν: (α) <strong>position</strong> ανά χρώμα (offset 0..1), (β) <strong>interpolation rule</strong> (color space + lerp). Με αυτά, η παλέττα σου <strong>είναι ήδη τα stop-colors</strong> ενός gradient. Κρίσιμο gotcha: το ίδιο ζεύγος hex δίνει διαφορετικό αποτέλεσμα ανάλογα με το interpolation space (sRGB → muddy midpoint, OKLab/OKLCH → saturated smooth) και τις θέσεις των stops. <strong>Το hex list under-specifies το gradient</strong>, οπότε αν αποθηκεύεις "gradient" σαν δεδομένο, χρειάζεσαι και αυτά τα δύο για να είναι αναπαραγώγιμο.</p>
+<p><strong>3. "Ο designer προτείνει gradient" → τι σημαίνει για το design; Τέσσερις περιπτώσεις, πιθανότερη η C.</strong><br />
+- <strong>A</strong> — gradient-derived παλέττα, χρήση <strong>flat</strong> (κανένα ορατό gradient). Υπαρκτό και tool-backed (Coolors "gradient palette").<br />
+- <strong>B</strong> — πραγματικό <strong>gradient fill</strong> μέσα στο design (hero, CTA, overlays).<br />
+- <strong>C</strong> — <strong>και τα δύο</strong>: flat base για το γενικό UI + λίγα approved gradient combos σε key surfaces. <strong>Το πιθανότερο intent.</strong><br />
+- <strong>D</strong> — "gradient" ως <strong>mood/αισθητική</strong> (soft, blended, glow), όχι spec παλέττας.</p>
+<p><strong>4. Η αρχική υπόθεση ("gradient = όλα τα elements gradient fill και μόνο") είναι η λιγότερο σωστή.</strong><br />
+Best practice = <strong>restraint</strong> ("one great gradient beats five average ones", bold gradients σε μικρή περιοχή). Το overuse αυξάνει το ρίσκο accessibility failures (το contrast αλλάζει pixel-by-pixel, μέτρα στο worst point: WCAG AA 4.5:1 normal, 3:1 large) + distraction + performance cost. Καμία authoritative πηγή δεν στηρίζει το "everything gradient".</p>
+<p><strong>5. Τι άλλαξε μετά το validation (τι ΔΕΝ άντεξε ως διατυπωμένο).</strong><br />
+Το core συμπέρασμα ("κυρίως C") <strong>επιβίωσε</strong> (4/7 claims confirmed, κανένα refuted, καμία 5η περίπτωση). Μαλακώθηκαν 3 υπερβεβαιώσεις:<br />
+- Οι "δύο άξονες" είναι <strong>διαχωρίσιμοι, όχι πλήρως ανεξάρτητοι</strong>: το tag δεν είναι ουδέτερο ως προς rendering (κουβαλάει το connotation ότι κάπου φαίνεται gradient).<br />
+- Το "C είναι dominant σε design systems" ισχύει για το <strong>brand/marketing layer</strong>, όχι για τα tokenized component libraries (εκεί default = flat base + ένα flat accent, gradients εκτός token).<br />
+- Το "καθαρό A είναι αντιφατικό" ήταν <strong>λάθος</strong>: είναι το κανονικό output της κατηγορίας (όρος τέχνης), απλώς ασύνηθες σε brief. Επίσης gradient ramp ≠ analogous.</p>
+<p><strong>Πρακτικό takeaway:</strong> όταν δεις "gradient" σε brief/παλέττα, default-άρε σε <strong>C</strong> (flat base + επιλεκτικά gradients), <strong>όχι</strong> σε "everything gradient". Αν χρειάζεσαι ακρίβεια για deliverable (stops, hex, angle, allowed surfaces), διευκρίνισε το scope με τον designer.</p>
+<hr />
+<h2>1. Τι είναι μια gradient παλέττα</h2>
+<p><strong>Gradient</strong> (γνωστό και ως color ramp / color progression): μια συνεχής, position-dependent μετάβαση ανάμεσα σε δύο ή περισσότερα ορισμένα χρώματα, που παράγεται με μαθηματική interpolation των ενδιάμεσων χρωμάτων μεταξύ σταθερών σημείων αναφοράς (τα <strong>color stops</strong>).</p>
+<p>Formally απαιτεί τρία συστατικά:<br />
+1. Μια αύξουσα ακολουθία <strong>positions</strong> (sample points)<br />
+2. Ένα <strong>χρώμα</strong> σε κάθε position (τα stops)<br />
+3. Έναν <strong>interpolation rule</strong> για ό,τι βρίσκεται ανάμεσα</p>
+<pre><code>gradient = ordered list of color stops { color, position }  +  interpolation rule (color space + lerp)
+</code></pre>
+<ul>
+<li>Τα <strong>stops</strong> είναι discrete. Το hex list σου = ακριβώς τα stop-colors, μείον τις θέσεις.</li>
+<li>Τα ενδιάμεσα χρώματα <strong>δεν αποθηκεύονται, υπολογίζονται</strong> at render time. Math per channel: <code>c = start + (end - start) * t</code>, piecewise ανάμεσα σε διαδοχικά stops.</li>
+</ul>
+<p><strong>Geometry / τύποι gradient</strong> (από το πώς τοποθετούνται τα stops):<br />
+- <strong>Linear / axial</strong> — μετάβαση κατά μήκος ευθείας ανάμεσα σε δύο σημεία, σε οποιαδήποτε γωνία.<br />
+- <strong>Radial</strong> — χρώματα ακτινωτά από ένα κέντρο σε ομόκεντρους κύκλους/ελλείψεις (center color -&gt; edge color).<br />
+- <strong>Conic / angular</strong> — stops τοποθετημένα σε γωνίες (degrees), περιστροφή γύρω από κέντρο (color-wheel / pie-sweep effect).<br />
+- <strong>Mesh</strong> — πλέγμα από stops και control points για multi-directional, painterly blends.</p>
+<p><strong>Gradient vs flat fill:</strong> το gradient δίνει συνεχή χρωματική μεταβολή, το solid/flat fill ένα ομοιόμορφο χρώμα. Στο CSS είναι και type distinction: το gradient είναι <code>&lt;image&gt;</code>, όχι <code>&lt;color&gt;</code>, γι' αυτό ζει στο <code>background-image</code>, όχι στο <code>background-color</code>.</p>
+<p><strong>Κρίσιμο:</strong> το οπτικό αποτέλεσμα εξαρτάται από το <strong>color space</strong> της interpolation. Το ίδιο red-to-blue ζεύγος περνά από muddy desaturated purple-gray midpoint σε sRGB, αλλά μένει saturated και smooth σε OKLab/OKLCH.</p>
+<h2>2. Είναι το "gradient" στην ίδια κατηγορία με warm/cold/pastel κλπ;</h2>
+<p><strong>Verdict: ΟΧΙ. Διαφορετικός, orthogonal άξονας.</strong></p>
+<p><strong>Τα άλλα εφτά απαντούν "ΠΟΙΑ χρώματα"</strong> και χαρτογραφούνται στις 3 κλασικές διαστάσεις του χρώματος (hue / saturation / value):<br />
+- warm/cold = hue (θερμοκρασία στον χρωματικό τροχό)<br />
+- bright/dark = value/lightness<br />
+- pastel = χαμηλό saturation + υψηλό lightness<br />
+- monochromatic = σχέση hue (ένα hue, μεταβολή S/V)<br />
+- vintage = mood/εποχή πάνω σε muted/desaturated hues</p>
+<p><strong>Το gradient απαντά "ΠΩΣ απλώνονται τα χρώματα στον χώρο"</strong> (position-dependent transition). Είναι rendering/application property, όχι color-content property.</p>
+<p><strong>Δομική απόδειξη ορθογωνιότητας:</strong> μπορείς να φτιάξεις warm-gradient, dark-gradient, pastel-gradient, monochromatic-gradient. Το gradient <strong>συνδυάζεται</strong> με κάθε ένα από τα άλλα tags αντί να <strong>ανταγωνίζεται</strong> μαζί τους, άρα κάθεται σε άλλον άξονα. Αντίθετα, δεν μπορείς να φτιάξεις "warm-cold" ή "pastel-vintage" ως single coherent value στον ίδιο άξονα.</p>
+<p><strong>Η nuance (γιατί μπερδεύεται):</strong> στα catalogues και στο dataviz το "gradient" χρησιμοποιείται χαλαρά ως palette-type (sequential/diverging gradients vs categorical). Επίσης ένα gradient συχνά υπονοεί μια σχέση χρωμάτων (smooth, low-contrast, κοντινό hue arc). ΟΜΩΣ αυτή η σχέση είναι <strong>παρενέργεια, όχι ορισμός</strong>: ένα gradient μπορεί να είναι monochromatic, analogous ή full rainbow. Το monochromatic ορίζεται ΑΠΟ τη σχέση hue, το gradient ορίζεται ΑΠΟ τη χωρική μετάβαση. Άρα: loosely tagged ως "palette type", αλλά κατηγορικά διαφορετικό.</p>
+<h2>3. Παλέττα = λίστα από hex. Πώς συμβιβάζεται με "gradient";</h2>
+<p><strong>Verdict: Μια λίστα hex ΔΕΝ είναι από μόνη της gradient, αλλά γίνεται gradient ντετερμινιστικά με positions + interpolation rule.</strong></p>
+<p>Η γέφυρα είναι <strong>μία πράξη: interpolation.</strong> Είναι ο τρόπος που βρίσκεις νέα χρώματα ανάμεσα σε γνωστά. Math: lerp per channel, <code>c = start + (end - start) * t</code>, piecewise ανάμεσα σε κάθε διαδοχικό ζεύγος stops.</p>
+<p>Τι λείπει από το raw hex list για να γίνει gradient:<br />
+1. <strong>position ανά χρώμα</strong> (offset 0..1 ή 0%..100%)<br />
+2. <strong>interpolation method</strong> (color space + lerp)</p>
+<p>5 hex γίνονται "gradient palette" ντετερμινιστικά: ισοκατανέμεις τα stops και διαλέγεις space:</p>
+<pre><code class="language-css">linear-gradient(in oklch, #h1 0%, #h2 25%, #h3 50%, #h4 75%, #h5 100%)
+</code></pre>
+<p>Κάθε design tool μοντελοποιεί το ίδιο πράγμα: array of <code>{color, position}</code>. Διαφέρουν μόνο στις μονάδες και στο default space:<br />
+- <strong>SVG:</strong> <code>&lt;stop offset stop-color&gt;</code> children μέσα στο parent gradient element<br />
+- <strong>Figma:</strong> <code>gradientStops: ColorStop[]</code> με <code>{position 0..1, color}</code>, geometry χωριστά (gradientTransform)<br />
+- <strong>Illustrator:</strong> gradient slider stops με location 0..100 + draggable midpoints + interpolation mode (Perceptual vs classic)</p>
+<p><strong>Κρίσιμο: το hex list under-specifies το gradient.</strong> Το ίδιο ζεύγος hex δίνει διαφορετικό αποτέλεσμα ανάλογα με (α) interpolation space (sRGB -&gt; muddy midpoint, OKLCH -&gt; saturated smooth), (β) stop positions (even vs weighted), (γ) midpoint hints/bias. "Το" gradient ενός palette δεν είναι μοναδικό χωρίς να ορίσεις αυτά.</p>
+<p>Συμπερασματικά: <strong>το palette σου ΕΙΝΑΙ ήδη τα stop-colors ενός gradient.</strong> Είναι το ίδιο color data, plain ως swatches, gradient όταν προσθέσεις τις δύο συμβάσεις.</p>
+<h2>4. Τι σημαίνει "ο designer προτείνει gradient" για το ίδιο το design;</h2>
+<p>Το κλειδί: <strong>"gradient palette" περιγράφει το color SET, όχι το πώς ζωγραφίζεται το design.</strong> Δύο <strong>διαχωρίσιμοι</strong> άξονες που συχνά μπερδεύονται σε έναν:</p>
+<ul>
+<li><strong>Άξονας 1 — Πώς προκύπτει η παλέττα:</strong> είναι gradient-derived; (τα hex είναι stops κατά μήκος ενός smooth ramp, άρα αρμονικά συνδεδεμένα). Αν την πεις "gradient palette", εξ ορισμού ναι.</li>
+<li><strong>Άξονας 2 — Πώς εφαρμόζεται στο design:</strong> μπαίνει πραγματικό gradient fill, ή τα χρώματα μπαίνουν flat; Ξεχωριστή απόφαση.</li>
+</ul>
+<p><em>Σημείωση (validation):</em> οι δύο άξονες είναι <strong>διαχωρίσιμοι</strong> (απόδειξη: το Material 3 παράγει ramp-derived discrete tones χωρίς κανένα rendered gradient), <strong>όχι όμως πλήρως ανεξάρτητοι στην καθημερινή χρήση</strong>. Το tag δηλώνει Άξονα 1 και επιτρέπει flat χρήση, αλλά δεν είναι ουδέτερο ως προς rendering: στο mainstream branding το "gradient palette" κουβαλάει το connotation ότι κάπου φαίνεται gradient (άρα πιθανότερο intent παραμένει C).</p>
+<p>Παράδειγμα παλέττας GLOH: <code>#FFD9C0 → #FF9E7A → #FF7AA8 → #C98BD6 → #A99BE0</code> (peach → coral → pink → lavender).</p>
+<p><strong>Οι 4 περιπτώσεις, με συγκεκριμένο design outcome:</strong></p>
+<p><strong>A — Gradient-derived παλέττα, flat χρήση</strong><br />
+Τα 5 hex μπαίνουν σαν <strong>solid fills</strong> (peach background, coral button, lavender badge). Πουθενά πραγματικό gradient στο τελικό. Το "gradient" είναι μόνο το logic/πηγή της παλέττας (γι' αυτό δένουν τα χρώματα), αόρατο στο μάτι. Αυτό βγάζουν εργαλεία: το Coolors έχει tool με τίτλο ακριβώς "gradient palette" (Start/End color → hex swatches), το Adobe το λέει "Extract Gradient". Default behavior = ισοκατανεμημένα flat swatches από ένα fade.<br />
+→ Outcome: harmonious flat design, <strong>κανένα ορατό gradient.</strong></p>
+<p><strong>B — Πραγματικό gradient μέσα στο design</strong><br />
+Τα ίδια hex γίνονται <strong>color stops</strong> και το design δείχνει συνεχείς μεταβάσεις: hero background peach→lavender, CTA coral→pink, image overlays.<br />
+→ Outcome: <strong>βλέπεις gradients</strong> στις key surfaces.</p>
+<p><strong>C — Και τα δύο</strong> (το ρεαλιστικό default όταν μιλάμε για brand/marketing expression)<br />
+Η ίδια παλέττα παίζει διπλό ρόλο: base flat χρώματα για το γενικό UI (text, cards, states) <strong>+</strong> 2-3 approved gradient combos από τα ίδια hex για hero/CTA/accents.<br />
+→ Outcome: flat neutral βάση + επιλεκτικά πραγματικά gradients.</p>
+<p><em>Σημείωση (validation) — δύο layers:</em> στα <strong>codified/tokenized design systems</strong> (Material 3, IBM Carbon, Linear) το default είναι flat base + <strong>ένα</strong> flat solid accent, με τα gradients <strong>εκτός</strong> του token system. Τα gradients ζουν στο <strong>brand/marketing layer</strong>: hero/marketing (Stripe) ή brand mark (Instagram gradient = logo, όχι UI surface). Άρα το "flat base + selective gradients" είναι dominant στο <strong>brand/marketing</strong> layer, <strong>όχι</strong> universal default σε κάθε component library.</p>
+<p><strong>D — "gradient" σαν mood, όχι σαν παλέττα</strong><br />
+Ο designer δεν περιγράφει δομή παλέττας. Λέει "θέλω gradient αισθητική" = soft, blended, atmospheric, glow vibe. Αφήνει ανοιχτό και ποια χρώματα και πού μπαίνουν. Το "gradient" είναι <strong>επίθετο πάνω σε όλη την οπτική γλώσσα</strong>, όχι spec.<br />
+→ Outcome: κατεύθυνση style, όχι συγκεκριμένο σύστημα.</p>
+<p><em>Γιατί ακριβώς 4 (exhaustive):</em> προκύπτουν από δύο orthogonal binaries (δομημένη παλέττα ναι/όχι × ορατό gradient ναι/όχι). Variants όπως gradient maps/duotone, animated gradients, mesh <strong>δεν</strong> είναι 5η περίπτωση: είναι διαφορετικός μηχανισμός/geometry/motion που ως <strong>ορατό outcome</strong> πέφτει στο B ή C.</p>
+<p><strong>Verdict — τι είναι πιο πιθανό:</strong><br />
+- <strong>Κυρίως C.</strong> Αν κάποιος λέει "gradient" κυριολεκτικά, περιμένει να <strong>δεις</strong> gradient κάπου (B παρόν) αλλά όχι παντού (και flat χρήση, A παρόν).<br />
+- <strong>Καθαρό A είναι ασύνηθες σε brief, ΟΧΙ αντιφατικό.</strong> Είναι όρος τέχνης: ένα set από flat swatches με interpolation logic (ακριβώς ό,τι βγάζουν τα "gradient palette" tools). "Κανένα ορατό gradient" = κανονικό output της κατηγορίας. Caveat: σε casual brief κάποιος που λέει "gradient" συχνά περιμένει να <strong>δει</strong> μετάβαση, οπότε αν το deliverable είναι 100% flat, διευκρίνισε intent. (Σημείωση: gradient ramp ≠ analogous, ένα peach→lavender ramp καλύπτει non-adjacent hues, άρα το "απλώς analogous" δεν στέκει σαν fallback.)<br />
+- <strong>Η αρχική υπόθεση "μόνο B / gradient fill και τίποτα flat" είναι η λιγότερο σωστή.</strong> Best practice = restraint: "one great gradient beats five average ones", bold gradients σε μικρή περιοχή (button/hero), όχι σε όλη την οθόνη. Overuse αυξάνει το ρίσκο accessibility failures (το contrast αλλάζει pixel-by-pixel: ίδιο text block περνάει WCAG AA σε μια περιοχή και κόβεται σε άλλη, μέτρα στο worst point: 4.5:1 normal, 3:1 large ≥18pt/14pt-bold, Level AA) + distracting + performance cost. Προσοχή ειδικά σε gradient CTAs.</p>
+<p><strong>Στο δικό σου tag system specifically:</strong><br />
+Όταν ταγκάρεις μια παλέττα "gradient", αυτό είναι δήλωση για τον <strong>Άξονα 1</strong> (το color set είναι ramp, έτοιμο να γίνει stops), <strong>όχι</strong> εγγύηση για το output. Το tag λέει "αυτά τα hex interpol-άρουν ωραία", όχι "βάλε gradient fill παντού". Γι' αυτό το "gradient" κάθεται σε <strong>διαφορετικό άξονα</strong> από warm/cold/pastel (που μιλάνε μόνο για το ποια χρώματα = Άξονας 1).</p>
+<p><strong>Σωστή κίνηση:</strong> μην default-άρεις σε "everything gradient fill." Πιο πιθανό intent = selective gradient σε key surfaces πάνω σε flat neutral βάση. Αν χρειάζεται ακρίβεια για deliverable (stops, hex, angle, allowed surfaces), διευκρίνισε το scope με τον designer.</p>
+<h2>5. Παράδειγμα brief για eshop</h2>
+<p><strong>Vertical:</strong> Clean beauty / skincare (tech-forward αισθητική, νεανικό κοινό, wellness αφήγηση: το πιο φυσικό έδαφος για gradient παλέτες).</p>
+<p><strong>Project:</strong> GLOH — Eshop &amp; rebrand οπτικής ταυτότητας<br />
+<strong>Πελάτης:</strong> GLOH Skincare<br />
+<strong>Παραδοτέο:</strong> Color system + UI direction για το νέο eshop</p>
+<p><strong>Audience</strong><br />
+- Γυναίκες και άνδρες 22-34, αστικά κέντρα (Αθήνα, Θεσσαλονίκη), digital-natives.<br />
+- Αγοράζουν κυρίως από κινητό (Instagram/TikTok -&gt; eshop), σύντομο attention span.<br />
+- Skincare-literate (niacinamide, hyaluronic, SPF), διαβάζουν ingredients, αλλά δεν θέλουν "κλινικό/φαρμακευτικό" στήσιμο.<br />
+- Value-driven: "καθαρές" φόρμουλες, cruelty-free, sustainability, με αισθητική που μοιράζεται στα stories.<br />
+- Μέτριο budget, 2-3 προϊόντα ανά παραγγελία, ευαίσθητοι σε look &amp; feel πριν την τιμή.</p>
+<p><strong>Brand</strong><br />
+- Όνομα: GLOH (από το "glow"). Σημαίνει λάμψη, ενυδάτωση, φρεσκάδα.<br />
+- Προϊόν: σειρά 8 SKU clean skincare (serums, moisturizers, SPF, cleanser, mist) σε minimal frosted μπουκάλια.<br />
+- Positioning: "skincare που λάμπει", προσιτό premium ανάμεσα σε pharmacy brand και high-end luxury.<br />
+- Brand promise: φωτεινό, ενυδατωμένο δέρμα χωρίς περίπλοκη ρουτίνα.<br />
+- Ανταγωνιστές αναφοράς (mood): Glossier, Typology, Frank Body.<br />
+- Logo: wordmark, λεπτό sans, χωρίς έντονο χρώμα. Αφήνει ελευθερία στο color system.</p>
+<p><strong>Language (tone of voice)</strong><br />
+- Φιλικό, ζεστό, "φίλη που ξέρει από skincare", όχι expert που σε κράζει.<br />
+- Σύντομες, καθαρές προτάσεις. Καθημερινή γλώσσα, ελάχιστη ορολογία (όταν μπαίνει, εξηγείται απλά).<br />
+- Optimistic και αισθησιακό χωρίς υπερβολές. Λέξεις-κλειδιά: λάμψη, φως, ενυδάτωση, φρεσκάδα, απαλό, αέρινο.<br />
+- Χωρίς ιατρικό/αυστηρό λεξιλόγιο, χωρίς fear-based marketing.<br />
+- Inclusive, body/skin positive. Μιλάει σε όλους τους τόνους δέρματος.</p>
+<p><strong>Characteristics (αισθητική κατεύθυνση)</strong><br />
+- Light, airy, "φωτεινό": αίσθηση φωτός που πέφτει στο δέρμα.<br />
+- Soft &amp; dewy: απαλές μεταβάσεις, τίποτα σκληρό ή high-contrast, αποφυγή έντονων μαύρων borders.<br />
+- Modern minimal με glow: άπλετο λευκό/off-white χώρο, αλλά με χρώμα που "αναπνέει" και κινείται, όχι flat blocks.<br />
+- Νεανικό, optimistic, "sun-kissed" παλέτα: ροδακινί, κοραλί, ροζ-χρυσό, απαλό μωβ, warm peach, lavender.<br />
+- Premium αλλά προσιτό: καθαρό feel χωρίς cold/luxury αυστηρότητα.<br />
+- Mobile-first: τα χρώματα ξεχωρίζουν και "λάμπουν" σε μικρές οθόνες, τραβάνε το μάτι στο feed.<br />
+- Επιθυμητό feel: golden-hour φως, ενυδάτωση, φρεσκάδα νωρίς το πρωί.</p>
+<p><strong>Deliverable προς σχεδιαστή:</strong> ολοκληρωμένο color system για το eshop (primary/secondary, backgrounds, accents, states) που μεταφέρει το "glow" και λειτουργεί σε mobile-first UI.</p>
+<h2>Πηγές</h2>
+<p><strong>Ορισμός &amp; θεωρία gradient</strong><br />
+- https://en.wikipedia.org/wiki/Color_gradient<br />
+- https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/gradient/linear-gradient<br />
+- https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient<br />
+- https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color-interpolation-method<br />
+- https://developer.mozilla.org/en-US/docs/Web/CSS/color-interpolation-method<br />
+- https://chrisburnell.com/article/interpolating-colours/<br />
+- https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e<br />
+- https://css-tricks.com/almanac/functions/l/linear-gradient/<br />
+- https://www.align.vn/blog/7-types-of-gradients-in-graphic-design/<br />
+- https://www.designyourway.net/blog/what-is-gradient-in-graphic-design/</p>
+<p><strong>Κατηγοριοποίηση χρώματος &amp; dataviz</strong><br />
+- https://learn.leighcotnoir.com/artspeak/elements-color/hue-value-saturation/<br />
+- http://www2.vitanorthamerica.com/products/shade-management/color-theory/understanding-color-overview/hue-value-and-chroma/<br />
+- https://www.paletton.com/wiki/index.php/Monochromatic_color_scheme<br />
+- https://www.datawrapper.de/blog/which-color-scale-to-use-in-data-vis<br />
+- https://www.geeksforgeeks.org/data-visualization/color-palettes-for-data-visualization/<br />
+- https://www.tandfonline.com/doi/full/10.1080/10696679.2025.2552272</p>
+<p><strong>Tooling (stops &amp; interpolation)</strong><br />
+- https://www.w3.org/TR/SVG11/pservers.html<br />
+- https://developers.figma.com/docs/plugins/api/Paint/<br />
+- https://helpx.adobe.com/illustrator/desktop/paint-and-fill/create-and-edit-gradients/gradients-overview.html</p>
+<p><strong>Gradient palettes σε design guides &amp; UI practice</strong><br />
+- https://colorarchive.org/guides/color-gradients-design-guide/<br />
+- https://colorarchive.org/guides/gradient-color-palette/<br />
+- https://www.linearity.io/blog/gradient-color-palette/<br />
+- https://www.zilliondesigns.com/blog/guide-gradients-web-design-color-palettes-trends/<br />
+- https://www.media.io/color-palette/gradient-color-palette.html<br />
+- https://supercharge.design/blog/gradients-in-ui-design-a-guide<br />
+- https://www.designrush.com/agency/graphic-design/trends/gradient-design<br />
+- https://blog.logrocket.com/ux-design/hero-section-examples-best-practices/<br />
+- https://www.pacgie.com/guides/css-gradient-mistakes<br />
+- https://www.landingpageflow.com/post/gradient-design-vs-flat-design-what-looks-better<br />
+- https://medium.com/@sagardattatrey/the-secret-science-of-gradients-the-ultimate-guide-to-creating-classy-gradients-in-ui-design-6bd5fc88b807<br />
+- https://www.kittl.com/blogs/gradient-design-trend-stl/<br />
+- https://blog.hubspot.com/website/gradients-in-design<br />
+- https://www.iconikai.com/blog/app-icon-design-trends-2026<br />
+- https://www.awesomesauce.in/insights/5-logo-design-trends-reshaping-brands-in-2026</p>
+<p><strong>Brand references</strong><br />
+- https://about.instagram.com/brand/gradient<br />
+- http://www.brandgradients.com/stripe-colors/<br />
+- https://www.designyourway.net/blog/stripe-logo/</p>
+<p><strong>Color tools (flat-from-gradient swatches)</strong><br />
+- https://colorkit.co/gradient-palette/<br />
+- https://coolors.co/gradient-palette<br />
+- https://color.adobe.com/create/image-gradient</p></div></div></body></html>

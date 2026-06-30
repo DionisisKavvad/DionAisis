@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polymarket — Master Report (+ σύγκριση με memecoins)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2128; --ink:#e6edf3; --muted:#9da7b3;
+    --line:#2d333b; --accent:#7c9cff; --accent2:#a371f7; --green:#3fb950; --red:#f85149; --amber:#d29922;
+    --chip:#21262d;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 22px 120px;}
+  header.hero{padding:34px 0 18px;border-bottom:1px solid var(--line);margin-bottom:28px;}
+  h1{font-size:30px;margin:0 0 8px;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:15px;margin:0}
+  .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:var(--chip);border:1px solid var(--line);border-radius:999px;
+    padding:4px 12px;font-size:13px;color:var(--muted)}
+  h2{font-size:23px;margin:46px 0 12px;padding-top:14px;border-top:1px solid var(--line)}
+  h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:8px}
+  h3{font-size:18px;margin:26px 0 8px;color:#cdd6e0}
+  h4{font-size:15px;margin:18px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{background:#0b0f14;border:1px solid var(--line);border-radius:5px;padding:1px 6px;
+    font:13.5px/1.4 "SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#a5d6ff}
+  strong{color:#fff}
+  .lead{font-size:17px;color:#cdd6e0;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:18px 20px}
+  .verdict{font-size:17px;background:linear-gradient(135deg,rgba(124,156,255,.1),rgba(163,113,247,.08));
+    border:1px solid rgba(124,156,255,.4);border-radius:12px;padding:20px 22px;margin:18px 0}
+  .verdict b{color:#fff}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:24px 0}
+  .toc h4{margin-top:0}
+  .toc ol{columns:2;column-gap:30px}
+  @media(max-width:640px){.toc ol{columns:1}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .callout{border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:15px}
+  .warn{background:rgba(248,81,73,.08);border-color:rgba(248,81,73,.4)}
+  .warn b{color:#ff8b82}
+  .ok{background:rgba(63,185,80,.08);border-color:rgba(63,185,80,.4)}
+  .ok b{color:#5fd06f}
+  .note{background:rgba(210,153,34,.08);border-color:rgba(210,153,34,.4)}
+  .note b{color:#e3b341}
+  .tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:6px;
+    text-transform:uppercase;letter-spacing:.4px;vertical-align:middle}
+  .t-legit{background:rgba(63,185,80,.15);color:#5fd06f;border:1px solid rgba(63,185,80,.4)}
+  .t-risky{background:rgba(210,153,34,.15);color:#e3b341;border:1px solid rgba(210,153,34,.4)}
+  .t-avoid{background:rgba(248,81,73,.15);color:#ff8b82;border:1px solid rgba(248,81,73,.4)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:#cdd6e0;font-weight:600}
+  tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+  .mc{color:#ff9e9e}
+  .pm{color:#9ecbff}
+  .step{display:flex;gap:14px;margin:12px 0;align-items:flex-start}
+  .step .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--accent);color:#0d1117;
+    font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .gloss{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 0}
+  .kpi{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0}
+  .kpi .b{flex:1;min-width:140px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px}
+  .kpi .b .v{font-size:20px;font-weight:800;color:#fff}
+  .kpi .b .l{font-size:12.5px;color:var(--muted)}
+  hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+  .small{font-size:13.5px;color:var(--muted)}
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+  .pill-list{list-style:none;padding:0}
+  .pill-list li{padding:8px 0;border-bottom:1px dashed var(--line)}
+  .pill-list li:last-child{border-bottom:none}
+  .winner{font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;margin-bottom:18px;background:#161b22;border:1px solid #2d333b;border-radius:10px;font-size:13.5px">
+  <a href="2026-06-29-trading-research-hub.html" style="color:#7c9cff;text-decoration:none;font-weight:600">📊 Hub</a>
+  <span style="color:#2d333b">|</span>
+  <a href="2026-06-29-crypto-master-report.html" style="color:#9da7b3;text-decoration:none">← 🪙 Crypto</a>
+  <span style="color:#2d333b">|</span>
+  <span style="color:#e6edf3;font-weight:600">🎯 Polymarket</span>
+</nav>
+
+<header class="hero">
+  <h1>🎯 Polymarket — Master Report</h1>
+  <p class="sub">Πλάνο + τι αλλάζει σε σχέση με τα memecoins, σε απλή γλώσσα.</p>
+  <div class="meta-row">
+    <span class="chip">🔬 Research: 45 agents, 7 domains</span>
+    <span class="chip">✅ 31 platforms/tools/strategies verified</span>
+    <span class="chip">📊 Prediction markets</span>
+    <span class="chip">🇬🇷 Greece/EU access</span>
+    <span class="chip">💰 $1-3k · ⏱ 1-2h/μέρα</span>
+  </div>
+</header>
+
+<p class="lead">
+Ζήτησες πλάνο για Polymarket και τι <strong>διαφοροποιήσεις</strong> υπάρχουν στις στρατηγικές σε σχέση με το memecoin trading. Έτρεξα ένα ολόκληρο research workflow (ίδια δομή: 7 παράλληλοι researchers → adversarial verify → σύνθεση 6 οδηγών). Αυτό το report τα μαζεύει και βάζει τη <strong>σύγκριση μπροστά</strong>.
+</p>
+
+<div class="verdict">
+<b>Το verdict χωρίς περιστροφές:</b> κάνε το <b>Polymarket το βασικό σου πεδίο</b> και μάζεψε τα memecoins προς ~μηδέν. ΟΧΙ επειδή βγάζει λεφτά εύκολα (δεν βγάζει: ~84% των wallets χάνουν, το top ~1% παίρνει ~75% των κερδών, και η πιο αυστηρή μελέτη βρήκε ότι ακόμα κι όσοι <em>προβλέπουν σωστά</em> έβγαλαν αρνητική απόδοση γιατί μπαίνουν αργά). Το αλλάζεις γιατί είναι <b>πιο δίκαιο εργαστήριο</b>: ορισμένες πιθανότητες, πραγματικό resolution, μετρήσιμο skill. Ρεαλιστικό money outcome = <b>breakeven έως μικρή ζημιά</b>, με το <b>skill (calibration) ως το πραγματικό κέρδος</b>. Ταιριάζει ακριβώς στον στόχο σου: λεφτά + κατανόηση. Πρόταση: <b>~85/15 χρόνος προς Polymarket</b>, capped στα $1-3k, μήνας 1 = δίδακτρα + χτίσιμο εργαλείου, όχι έσοδα.
+</div>
+
+<div class="toc">
+  <h4>Περιεχόμενα</h4>
+  <ol>
+    <li><a href="#run">Τι έτρεξα</a></li>
+    <li><a href="#matrix">Η σύγκριση (12 διαστάσεις)</a></li>
+    <li><a href="#skills">Skills: τι μεταφέρεται / τι πεθαίνει / τι νέο</a></li>
+    <li><a href="#how">Πώς δουλεύει το Polymarket</a></li>
+    <li><a href="#strategies">Στρατηγικές (ranked)</a></li>
+    <li><a href="#calibration">Το core skill: forecasting</a></li>
+    <li><a href="#tools">Εργαλεία & automation</a></li>
+    <li><a href="#risk">Risk, sizing & σύστημα v0.1</a></li>
+    <li><a href="#legal">Νομικά (Ελλάδα/EU)</a></li>
+    <li><a href="#truth">Η ωμή αλήθεια</a></li>
+    <li><a href="#next">Τι κάνουμε τώρα</a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<h2 id="run"><span class="num">1.</span>Τι έτρεξα</h2>
+<p>Workflow <code>polymarket-edge-research</code>: 7 domains (mechanics & access, strategy taxonomy, forecasting/calibration, tooling/automation, risk/bankroll, differentiation vs memecoins, πώς χάνει ο κόσμος) → adversarial verification σε κάθε platform/tool/strategy/legal claim → σύνθεση σε 6 deliverables (P1-P6). Όλα στο <code>reports/</code>.</p>
+<table>
+  <tr><th>Doc</th><th>Τι είναι</th></tr>
+  <tr><td><strong>P1</strong></td><td>Πώς δουλεύει το Polymarket + νομική πρόσβαση από Ελλάδα/EU</td></tr>
+  <tr><td><strong>P3</strong></td><td><strong>Memecoin vs Polymarket — η σύγκριση (το headline)</strong></td></tr>
+  <tr><td><strong>P2</strong></td><td>Στρατηγικές, ranked για το προφίλ σου</td></tr>
+  <tr><td><strong>P4</strong></td><td>Forecasting & calibration curriculum (το core skill)</td></tr>
+  <tr><td><strong>P5</strong></td><td>Εργαλεία, data & automation map</td></tr>
+  <tr><td><strong>P6</strong></td><td>Starter system spec + risk/bankroll (v0.1)</td></tr>
+</table>
+
+<!-- 2 -->
+<h2 id="matrix"><span class="num">2.</span>Η σύγκριση (12 διαστάσεις)</h2>
+<p>Το κεντρικό κομμάτι. <span class="mc">Κόκκινο = memecoins</span>, <span class="pm">μπλε = Polymarket</span>.</p>
+<table>
+  <tr><th>Διάσταση</th><th class="mc">Memecoins</th><th class="pm">Polymarket</th></tr>
+  <tr><td><strong>1. Πηγή edge</strong></td><td>Narrative + ταχύτητα, σε χάος χωρίς ορισμένες πιθανότητες</td><td><code>η πιθανότητά σου − τιμή αγοράς</code> = υπολογίσιμο. Αλλά ο πραγματικός οδηγός είναι <strong>πληροφορία + υπομονετικό maker execution</strong>, όχι μόνο «ξέρω καλύτερα»</td></tr>
+  <tr><td><strong>2. Skill που χρειάζεται</strong></td><td>Narrative reading, on-chain forensics. Δεν μετριέται, δεν μεταφέρεται, πεθαίνει με κάθε meta</td><td><strong>Calibration (μετρήσιμη), forecasting, ανάγνωση κανόνων resolution.</strong> Συσσωρεύεται και μεταφέρεται</td></tr>
+  <tr><td><strong>3. Χρονικός ορίζοντας</strong></td><td>&lt;4h, μιας χρήσης, δεν προλαβαίνεις να βλέπεις</td><td><strong>Εσύ διαλέγεις:</strong> ώρες έως μήνες. Διάμεσος ~41' μετά το event. Βάζεις limit order και φεύγεις → ταιριάζει στο async</td></tr>
+  <tr><td><strong>4. Είδη ρίσκου</strong></td><td>Rug / honeypot / bundle / slippage. Καταστροφικό &amp; ακαριαίο</td><td><strong>Oracle/resolution risk</strong> (μπορεί να βγει λάθος), <strong>κλείδωμα κεφαλαίου</strong>, ρηχό book. Λιγότερο καταστροφικό, αλλά 2 ΝΕΑ ρίσκα</td></tr>
+  <tr><td><strong>5. Έξοδα</strong></td><td>~3-7% round-trip, αναπόφευκτα. Θες +10% για breakeven</td><td><strong>Maker (resting limit) = $0 + rebate.</strong> Taker = 0.75-1.8%. Αν μένεις maker, τα έξοδα καταρρέουν στο ~0</td></tr>
+  <tr><td><strong>6. Ρόλος automation</strong></td><td>Αυτοματοποιείς τα EXITS πρώτα. Το picking είναι speed race που χάνεις</td><td>Αυτοματοποιείς <strong>SIZING + LOGGING</strong> πρώτα. ΟΧΙ το picking μέχρι να αποδειχθεί. Arb/MM bots ΔΕΝ είναι βιώσιμα στα $1-3k</td></tr>
+  <tr><td><strong>7. Kelly / πιθανότητες</strong></td><td><strong>Άχρηστο.</strong> Καμία ορισμένη πιθανότητα</td><td><strong>Native.</strong> Τιμή = πιθανότητα, payoff $1/$0 → Kelly + Brier δουλεύουν. <em>Ο δομικός λόγος που είναι πραγματικό εργαστήριο</em></td></tr>
+  <tr><td><strong>8. Variance</strong></td><td>Ακραία, fat-tailed, σχεδόν θόρυβος. ~98% αποτυγχάνουν</td><td>Φραγμένη ανά στοίχημα ($1/$0), αλλά ο πληθυσμός σκληρός. Θες 100+ resolutions πριν μετρήσει το Brier σου</td></tr>
+  <tr><td><strong>9. Scalability</strong></td><td>Καπάκι από τη ρευστότητα· η αγορά σου τραντάζει το pool</td><td>Επίσης καπάκι στα thin niche markets. Αλλά το μικρό σου μέγεθος <strong>χωράει ακριβώς εκεί που η ανεπάρκεια ζει</strong></td></tr>
+  <tr><td><strong>10. Tilt / ψυχολογία</strong></td><td>Υψηλό. Round-tripping, FOMO, revenge, averaging down</td><td>Χαμηλότερο (βάζεις order, φεύγεις). Νέα tilt: ανυπόμονος taker + overconfident sizing</td></tr>
+  <tr><td><strong>11. Πώς χάνει ο κόσμος</strong></td><td>Είσαι exit liquidity σε rugs, bundles, paid groups, snipers</td><td>Μπαίνεις <strong>αργά ως taker</strong> σε κακή τιμή, αγοράζεις <strong>longshots</strong>, πληρώνεις spread σε sharper crowd</td></tr>
+  <tr><td><strong>12. Νομικά / πρόσβαση</strong></td><td>Permissionless, no KYC, no geo-block. Ρίσκο = τεχνικό</td><td>Ελλάδα προσβάσιμη σήμερα, αλλά <strong>MiCA grey zone + gambling-law + cliff 1/7/2026</strong>. Εδώ τα memecoins είναι πιο καθαρά</td></tr>
+</table>
+
+<!-- 3 -->
+<h2 id="skills"><span class="num">3.</span>Skills: τι μεταφέρεται, τι πεθαίνει, τι νέο</h2>
+<div class="grid">
+  <div class="card"><h4 style="color:var(--green)">✅ Μεταφέρεται</h4>
+    <ul><li><strong>API / bot-building.</strong> Φτιάχνεις ήδη pipelines/alerts. Εδώ πιο καθαρό (δωρεάν Gamma/Data APIs, πραγματικό order book).</li><li><strong>Exit/sizing discipline</strong> → γίνεται fractional Kelly + maker orders + hard caps. Ίδιος μυς, τώρα υπολογίσιμος.</li><li><strong>Γρήγορο triage</strong> ειδοποιήσεων → weekly watchlist + pre-trade checklist.</li></ul>
+  </div>
+  <div class="card"><h4 style="color:var(--red)">💀 Πεθαίνει</h4>
+    <ul><li><strong>Narrative/meta reading.</strong> Μηδενική αξία σε αγορά με ορισμένο resolution.</li><li><strong>MEV / rug forensics.</strong> Δεν υπάρχουν rugs/honeypots.</li><li><strong>Sniper ταχύτητα.</strong> Bot-owned (73% του arb κέρδους σε sub-100ms bots).</li></ul>
+  </div>
+  <div class="card"><h4 style="color:var(--accent2)">🆕 Νέο (από το μηδέν)</h4>
+    <ul><li><strong>Probability calibration / Brier.</strong> Οι πιθανότητές σου να ταιριάζουν με τα αποτελέσματα. Εκπαιδεύεται δωρεάν.</li><li><strong>Base-rate forecasting.</strong> «Outside view first». Ο βρόχος του Tetlock.</li><li><strong>Ανάγνωση oracle/resolution risk.</strong> Διαβάζεις τους ακριβείς κανόνες σαν δικηγόρος.</li></ul>
+  </div>
+  <div class="card"><h4>🧭 Το νόημα</h4>
+    <p>Το core thesis σου («γίνε η καλύτερα πληροφορημένη πλευρά, όχι η πιο γρήγορη») <strong>επιβιώνει</strong>. Αλλά εδώ είναι <strong>μετρήσιμο</strong>, και το <strong>execution (maker) είναι το μισό edge</strong>, όχι λεπτομέρεια.</p>
+  </div>
+</div>
+
+<!-- 4 -->
+<h2 id="how"><span class="num">4.</span>Πώς δουλεύει το Polymarket (απλά)</h2>
+<ul>
+  <li><strong>Στοιχηματίζεις σε εκβάσεις πραγματικών γεγονότων</strong> (εκλογές, τιμές, αθλητικά, AI milestones). Αγοράζεις μετοχές <strong>YES</strong> ή <strong>NO</strong>.</li>
+  <li><strong>Η τιμή ΕΙΝΑΙ η πιθανότητα.</strong> YES στα $0.65 = η αγορά λέει 65% να συμβεί. YES + NO = πάντα $1.00. Αν συμβεί → η μετοχή πληρώνει $1, αλλιώς $0.</li>
+  <li><strong>Order book (CLOB)</strong>, settlement σε Polygon, με USDC (που τυλίγεται αυτόματα σε «pUSD»). Gas &lt; $0.01.</li>
+  <li class="winner"><strong>Maker vs Taker = όλο το παιχνίδι των εξόδων.</strong> Limit order που <em>κάθεται</em> στο book = maker = <strong>$0 + rebate</strong>. Order που περνάει το spread και γεμίζει αμέσως = taker = πληρώνει 0.75-1.8%. <strong>Default σε resting limit orders, ποτέ μην περνάς το spread.</strong></li>
+</ul>
+<div class="callout warn">
+<b>Το ΝΕΟ μεγάλο ρίσκο — resolution via UMA oracle:</b> ένα memecoin δεν «κλείνει» ποτέ. Μια αγορά Polymarket κλείνει με <strong>ψηφοφορία κατόχων του UMA token, όχι με «αντικειμενική αλήθεια»</strong>. Μπορείς να έχεις δίκιο και να πληρωθείς λάθος.
+<ul style="margin-top:8px">
+<li>Ukraine deal (2025, ~$7M): έκλεισε «Yes» ενώ δεν υπήρχε deal, μετά από whale με ~25% των ψήφων.</li>
+<li>MicroStrategy «πούλησε BTC ως 31 Μαΐου» (2026, $60-85M): διαφωνία καθαρά για τη διατύπωση.</li>
+<li><strong>1,150+ disputed markets το 2026</strong> (ξεπέρασε ήδη όλο το 2025). Σε ~50% των disputes, &gt;50% των ψήφων από τα top-10 wallets.</li>
+</ul>
+<b>Άμυνα:</b> προτίμα <strong>αντικειμενικά / Chainlink-resolved</strong> markets (σπορ, τιμές), διάβασε τους ακριβείς κανόνες πριν μπεις, απέφυγε ασαφή διατύπωση («significant», «major»).
+</div>
+<p class="gloss"><strong>CLOB</strong> = central limit order book, το βιβλίο εντολών. <strong>oracle</strong> = ο μηχανισμός που αποφασίζει πώς «έκλεισε» η αγορά. <strong>capital lockup</strong> = τα λεφτά σου είναι δεσμευμένα μέχρι να κλείσει η αγορά (διάμεσος ~41', αλλά ουρά έως μέρες/βδομάδες).</p>
+
+<!-- 5 -->
+<h2 id="strategies"><span class="num">5.</span>Στρατηγικές (ranked για το προφίλ σου)</h2>
+<div class="callout note">
+<b>Το μεγάλο εύρημα (που ανατρέπει την προφανή λογική):</b> «η πληροφορία κερδίζει» είναι μισός μύθος. Η πιο αυστηρή μελέτη (Della Vedova 2026, 222εκ trades) βρήκε ότι οι <strong>σωστοί στις προβλέψεις έβγαλαν ΑΡΝΗΤΙΚΗ απόδοση</strong> γιατί μπαίνουν αργά ως takers, ενώ οι σχεδόν-τυχαίοι έβγαλαν κέρδος μέσω <strong>maker discipline</strong>. Άρα το edge = πληροφορία + maker execution + calibration, ΟΧΙ πληροφορία μόνη.
+</div>
+<table>
+  <tr><th>Στρατηγική</th><th>Verdict</th><th>Σχόλιο</th></tr>
+  <tr><td><strong>Niche mispricing στον τομέα σου</strong> (AI/crypto/tech), ως maker</td><td><span class="tag t-risky">risky, salvageable</span></td><td>Tier 1. Εκεί που οι άνθρωποι ακόμα νικούν bots: thin, niche markets με domain knowledge. ΜΟΝΟ ως maker + resolution filter + Brier logging.</td></tr>
+  <tr><td><strong>Calibration ως meta-skill</strong> (δωρεάν training)</td><td><span class="tag t-legit">legit</span></td><td>Tier 1. Το φθηνότερο, χαμηλότερου ρίσκου πρώτο βήμα. $0, &lt;30'/μέρα, evidence-backed.</td></tr>
+  <tr><td><strong>Favorite-longshot fade</strong> (πούλα overpriced longshots ως maker)</td><td><span class="tag t-legit">legit</span></td><td>Tier 2. Το πιο σταθερό ακαδημαϊκό εύρημα. Edge ~2-5%/contract, αργό. Bonus: τα longshots είναι ο #1 λόγος που χάνει το retail.</td></tr>
+  <tr><td><strong>NegRisk arb scanner</strong> (άθροισμα YES &lt; $1)</td><td><span class="tag t-risky">risky</span></td><td>Tier 2. Φτιάξ' το read-only πρώτα. Τα 2026 taker fees μπορεί να αντιστρέψουν το edge. Καλό για να μάθεις το API.</td></tr>
+  <tr><td><strong>Copy-trading whales</strong></td><td><span class="tag t-risky">signal only</span></td><td>Tier 3. Το «78% hit-rate» είναι folklore (n=14 blog). Ποτέ τυφλό mirror (γίνεσαι exit liquidity). Χρήση μόνο για μελέτη.</td></tr>
+  <tr><td><strong>News-trading ταχύτητας</strong></td><td><span class="tag t-avoid">poor fit</span></td><td>Bots αντιδρούν σε ~21-150ms. Θα είσαι το liquidity που μαζεύουν.</td></tr>
+  <tr><td><strong>Market-making / arb bots</strong></td><td><span class="tag t-avoid">defer/avoid</span></td><td>Latency war + χρειάζεται $1M-10M pools. Τα $1-3k είναι πολύ λίγα. Αντιφάσκει στο info-not-speed thesis.</td></tr>
+</table>
+<div class="callout ok">
+<b>Τι να ξεκινήσεις (2-3 picks):</b>
+<ol style="margin-top:8px">
+<li><strong>Calibration dojo + paper track record</strong> (Βδομάδα 1, $0): Clearer Thinking + Quantified Intuitions Pastcasting → μετά Metaculus + Good Judgment Open, 50-100 timestamped προβλέψεις.</li>
+<li><strong>Niche mispricing ως maker</strong> στον τομέα σου, σε liquid + αντικειμενικά markets, 30-7 ημερών.</li>
+<li><strong>Αυτοματοποίησε το measurement + discipline</strong> (sizing + logging), ΟΧΙ το picking.</li>
+</ol>
+</div>
+
+<!-- 6 -->
+<h2 id="calibration"><span class="num">6.</span>Το core skill: forecasting / calibration</h2>
+<p>Αυτό είναι το durable, transferable edge που τα memecoins ποτέ δεν έχτισαν. Επειδή η τιμή ΕΙΝΑΙ πιθανότητα, μπορείς να γράψεις μια πρόβλεψη, να τη βαθμολογήσεις, και να δεις αν νικάς το πλήθος.</p>
+<ul>
+  <li><strong>Calibration</strong> = οι πιθανότητές σου ταιριάζουν με τη συχνότητα. Ό,τι λες 70% πρέπει να συμβαίνει ~70% των φορών.</li>
+  <li><strong>Brier score</strong> = πόσο μακριά είναι οι πιθανότητές σου από το αποτέλεσμα (0 = τέλειο, 0.25 = «πάντα 50/50»). Benchmark αγοράς ~0.084 = δύσκολο να νικηθεί.</li>
+  <li><strong>Ο βρόχος Tetlock:</strong> base rate πρώτα (outside view) → Fermi decomposition → διάβασε τους κανόνες resolution → βάλε granular πιθανότητα → σύγκρινε με την τιμή → δράσε μόνο αν το edge ξεπερνά fee+spread+haircut.</li>
+</ul>
+<div class="callout warn">
+<b>Σκληρή αλήθεια:</b> calibration = <strong>αναγκαία αλλά όχι αρκετή</strong>. Το Brier συσχετίζεται μόλις +0.148 με το πραγματικό PnL. Τέλειος forecaster που κάνει λάθος sizing δεν βγάζει λεφτά. Χρειάζεσαι <strong>100+ independent resolutions</strong> πριν μετρήσει το Brier σου.
+</div>
+<p><strong>Πλάνο 3 φάσεων:</strong> Βδ.1 calibration drills ($0) → Βδ.2-6 50-100 προβλέψεις σε Metaculus/GJ Open (το «relative Brier» του GJ Open σου λέει αν νικάς το πλήθος) → Βδ.6-12 bet-log + score Brier vs αγορά. <em>Bonus για σένα:</em> ένας LLM forecasting copilot (agent που τρέχει το checklist) είναι ~1μηνο build, human-in-the-loop.</p>
+
+<!-- 7 -->
+<h2 id="tools"><span class="num">7.</span>Εργαλεία & automation</h2>
+<p>Το επίσημο data/API layer είναι first-class και <strong>δωρεάν για read</strong> (το αντίθετο του memecoin RPC scraping). Αλλά το πακέτο που βλέπεις στο 90% των tutorials (<code>py-clob-client</code>) είναι <strong>νεκρό</strong> (archived Μάι 2026).</p>
+<table>
+  <tr><th>Layer</th><th>Verdict</th><th>Ρόλος</th></tr>
+  <tr><td><strong>Gamma + Data APIs</strong> (raw HTTP)</td><td><span class="tag t-legit">free</span></td><td>Το θεμέλιο του v0.1 (markets, τιμές, resolutions). Χωρίς auth.</td></tr>
+  <tr><td><strong>Metaculus / GJ Open + calibration apps</strong></td><td><span class="tag t-legit">free</span></td><td>Το «edge engine» — money-free track record.</td></tr>
+  <tr><td><strong>Dune dashboards</strong></td><td><span class="tag t-legit">free</span></td><td>Μελέτη smart-money (όχι copy).</td></tr>
+  <tr><td><strong>py-sdk</strong> (ή py-clob-client-v2)</td><td><span class="tag t-legit">beta</span></td><td>Execution layer (v0.2+). Προσοχή στο pUSD collateral.</td></tr>
+  <tr><td><strong>OddsPapi</strong></td><td><span class="tag t-legit">free tier</span></td><td>Cross-venue mispricing scan vs sharp books.</td></tr>
+  <tr><td><strong>Polywhaler / copy-trade tools</strong></td><td><span class="tag t-risky">signal only</span></td><td>Read-only OK· ποτέ auto-mirror.</td></tr>
+  <tr><td><strong>py-clob-client (v1)</strong></td><td><span class="tag t-avoid">dead</span></td><td>Archived. ΜΗΝ το χρησιμοποιήσεις.</td></tr>
+  <tr><td><strong>Arb / market-making bots</strong></td><td><span class="tag t-avoid">not viable</span></td><td>Όχι στα $1-3k.</td></tr>
+</table>
+<div class="callout ok">
+<b>Το v0.1 build (~1 μήνας):</b> ένα read-only, cron pipeline:
+<ol style="margin-top:8px">
+<li><strong>Data ingest</strong> (Gamma+Data APIs) → markets, τιμές, κανόνες resolution.</li>
+<li><strong>Filters</strong> → liquidity/spread floor + resolution-clarity screen.</li>
+<li><strong>Bet log</strong> (το core deliverable) → timestamp, your_p, market_price@entry, size, fee, resolution, PnL.</li>
+<li><strong>Kelly + caps calculator</strong> (fee-aware).</li>
+<li><strong>Alerts</strong> (Telegram) → semi-auto, εσύ αποφασίζεις.</li>
+</ol>
+<b>Αυτοματοποίησε το SIZING + LOGGING, όχι το PICKING.</b> Αυτό σκοτώνει την παρορμητική taker συμπεριφορά που σκοτώνει το retail.
+</div>
+
+<!-- 8 -->
+<h2 id="risk"><span class="num">8.</span>Risk, sizing & σύστημα v0.1</h2>
+<h3>Position sizing — fractional Kelly (εδώ δουλεύει!)</h3>
+<p>Επειδή υπάρχουν ορισμένες πιθανότητες, το Kelly είναι χρησιμοποιήσιμο (στα memecoins ήταν άχρηστο).</p>
+<ul>
+  <li><strong>Quarter Kelly</strong> όσο έχεις &lt;50-100 logged resolutions. <strong>Half Kelly</strong> μόνο αφού το Brier σου νικήσει την αγορά. <strong>Ποτέ full Kelly.</strong></li>
+  <li><strong>Hard caps που υπερισχύουν του Kelly:</strong> ≤3% ανά θέση (~$30-90), ≤25% συνολικό άνοιγμα, ≤40% ανά correlated cluster (5 Fed markets = ΕΝΑ στοίχημα), ≤15% σε οποιαδήποτε fuzzy oracle market.</li>
+  <li><strong>Πούλα winners στα ~$0.95</strong> αντί να κρατάς ως $1.00 (αποφεύγεις το lockup + το dispute tail στα τελευταία cents).</li>
+</ul>
+<p class="gloss">Το sizing είναι <strong>επιβίωση, όχι alpha</strong>. Σε κρατάει ζωντανό αρκετά για να μάθεις αν έχεις edge — δεν δημιουργεί edge.</p>
+<h3>Checkpoints (process over PnL)</h3>
+<div class="callout ok">
+<b>1 μήνας:</b> scanner live, Kelly+caps calculator + auto-logger δουλεύουν, calibration baseline + 50-100 forecasts, funding loop verified. <em>ΜΗΝ περιμένεις αποδεδειγμένο edge — το sample είναι θόρυβος.</em><br><br>
+<b>3 μήνες:</b> 100+ resolved bets. Νικάς το Brier της αγοράς; Αν ναι → half-Kelly + automate entry. Αν όχι → το κέρδος ήταν το <strong>skill/γνώση</strong> (co-equal goal), νόμιμο outcome. Μην scale-άρεις σε hot streak.
+</div>
+
+<!-- 9 -->
+<h2 id="legal"><span class="num">9.</span>Νομικά / πρόσβαση (Ελλάδα/EU) — <span style="color:var(--amber)">fragile, re-verify</span></h2>
+<ul>
+  <li><strong>Πρόσβαση:</strong> Ελλάδα προσβάσιμη σε επίπεδο IP σήμερα (μία από ~22/27 EU κράτη· Γαλλία/Βέλγιο/Πορτογαλία/Ουγγαρία μπλοκαρισμένα, Ισπανία Μάι 2026). <strong>No KYC</strong> για non-US στο μέγεθός σου.</li>
+  <li><strong>Νομική φύση:</strong> MiCA Article 61 reverse-solicitation <strong>grey zone, ΟΧΙ άδεια</strong>. Επιπλέον gambling-law exposure (Hellenic Gaming Commission σε crackdown). <strong>Σκληρό inflection: 1 Ιουλίου 2026</strong> (τέλος MiCA transition). Re-verify πριν χρηματοδοτήσεις.</li>
+  <li><strong>ΠΟΤΕ VPN</strong> (ToS 2.1.4, ανιχνεύεται, παγώνει funds — και δεν το χρειάζεσαι).</li>
+  <li><strong>Fiat ramp:</strong> SEPA → Kraken/Coinbase EU → αγόρασε USDC → στείλε σε Polygon → Polymarket. Coinbase EU = δωρεάν USDC-Polygon withdrawal. Απέφυγε MoonPay κάρτα (2-3%).</li>
+  <li><strong>Φόρος:</strong> DAC8 (ισχύει Ιαν 2026) → το EU CEX σου αναφέρει τη δραστηριότητα στις ελληνικές αρχές. Η κατηγοριοποίηση (τζόγος vs capital gains) είναι <strong>άλυτη</strong> → πάρε Έλληνα λογιστή πριν από μέγεθος.</li>
+  <li><strong>POLY airdrop:</strong> confirmed intent, no token/date. Optional upside — μην παραμορφώνεις sizing για να το farmάρεις.</li>
+</ul>
+
+<!-- 10 -->
+<h2 id="truth"><span class="num">10.</span>Η ωμή αλήθεια</h2>
+<div class="callout warn">
+<ul style="margin:0">
+<li><strong>~84% των wallets χάνουν.</strong> Το top ~1% παίρνει ~75% των κερδών. Οι μεγάλοι νικητές είναι bots/sharps, όχι forecasters. Ρεαλιστικό outcome για part-time async = <strong>breakeven έως μικρή ζημιά</strong>.</li>
+<li><strong>«Η πληροφορία κερδίζει» = μισός μύθος.</strong> Το patient maker execution είναι αυτό που πληρώνει.</li>
+<li><strong>Resolution/oracle risk είναι ΕΠΑΝΑΛΑΜΒΑΝΟΜΕΝΟ</strong> (1,150+ disputes το 2026), όχι σπάνια ουρά. Φίλτραρε σε κάθε entry.</li>
+<li><strong>Longshots</strong> (&lt;$0.10) = ο #1 λόγος που χάνει το retail. Μην τα αγγίζεις.</li>
+<li><strong>py-clob-client νεκρό</strong> — το 90% των tutorials δεν δουλεύουν. Χρήση Gamma/Data APIs + py-sdk.</li>
+<li><strong>Το πραγματικό κέρδος είναι το skill.</strong> Αντιμετώπισε τα λεφτά ως byproduct και το calibrated forecasting ως το asset.</li>
+</ul>
+</div>
+
+<!-- 11 -->
+<h2 id="next"><span class="num">11.</span>Τι κάνουμε τώρα</h2>
+<div class="grid">
+  <div class="card"><h4>Άμεσα ($0, νόμιμο, καθόλου κεφάλαιο)</h4>
+    <ul><li>Calibration drills (Clearer Thinking + Quantified Intuitions).</li><li>Άνοιξε Metaculus + GJ Open, ξεκίνα 50-100 forecasts στον τομέα σου.</li><li>Διάβασε τους κανόνες resolution σε 5-10 πραγματικά markets για εξάσκηση.</li></ul>
+  </div>
+  <div class="card"><h4>Μπορώ να σου φτιάξω</h4>
+    <ul><li><strong>Bet-log + calibration template</strong> (με Brier vs market).</li><li>Scope για το <strong>v0.1 read-only scanner</strong> (Gamma/Data → filters → Telegram) ως project.</li><li><strong>Pre-trade checklist</strong> (Tetlock loop + F1-F7 filters).</li><li>Scope για τον <strong>LLM forecasting copilot</strong>.</li></ul>
+  </div>
+</div>
+<p class="small">Πριν χρηματοδοτήσεις: (1) re-verify πρόσβαση Ελλάδας <strong>μετά την 1/7/2026</strong>· (2) test full deposit→trade→withdraw loop με μικρό ποσό· (3) Έλληνας λογιστής· (4) cap στα $1-3k, funds withdrawable.</p>
+
+<footer>
+  <p><strong>Πηγές:</strong> κάθε deliverable έχει πλήρη λίστα URLs. Δες: <code>reports/2026-06-29-polymarket-P1..P6</code>. Memecoin contrast: <code>reports/2026-06-25-crypto-D3</code>.</p>
+  <p>Research: workflow «polymarket-edge-research», 45 agents, 7 domains, 31 platforms/tools/strategies επαληθευμένα αντιπαλικά. · Report: 29 Ιουν 2026.</p>
+</footer>
+
+</div>
+</body>
+</html>

@@ -51,6 +51,7 @@ Skills live in `.claude/skills/`. The pattern:
 - **create-video** — end-to-end workflow for planning a new video in `content-engine`: brief, script, shots, title/thumbnail, cross-posts. Triggers on "new video", "plan video", "video about X", "/create-video". See `.claude/skills/create-video/SKILL.md`.
 - **advisor** — maieutic advisor για να ξεκαθαρίσεις μεγάλες αφηρημένες ερωτήσεις πριν αρχίσεις να τις εκτελείς (γενικός στόχος, direction, vision). Setup mode (χτίζει thesis αγνοώντας projects) + Consultation mode. Triggers on "/advisor", "advisor session", "consult advisor". See `.claude/skills/advisor/SKILL.md`.
 - **create-mcp** — scaffold and harden a new MCP server inside `~/Projects/mcps/`. Walks Phase S (secrets hardening, 8 layers) + Phase I (write protection, 9 layers). Triggers on "new mcp", "create mcp", "mcp for X", "/create-mcp". See `.claude/skills/create-mcp/SKILL.md`.
+- **grill-me** — relentlessly interview the user about a plan/design/topic, checkpointing every answer to a `brainstorms/YYYY-MM-DD-<slug>.md` capture file so nothing is lost as context fills up. Triggers on "grill me", "stress-test this plan", "brainstorm/discovery session", "get this out of my head". See `.claude/skills/grill-me/SKILL.md`.
 
 ## Sub-Agents
 Sub-agents live in `.claude/agents/`. Each one has its own reason to exist (isolated context, specialized tools, narrower scope, different model, etc.). When a skill wants to be executed through a sub-agent, it will say so inside its own `SKILL.md`. Do not assume delegation defaults here.
