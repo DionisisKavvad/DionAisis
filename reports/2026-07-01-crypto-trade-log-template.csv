@@ -1,0 +1,2 @@
+date,token,entry_mcap_usd,entry_liquidity_usd,position_size_usd,position_pct_bankroll,entry_lane,yes_checklist_hits,narrative_family,meta_state,exit_tranche_pct,exit_multiple,exit_rule_fired,r_multiple,fees_paid_usd,net_pnl_usd,notes
+2026-07-01,EXAMPLE,150000,80000,30,1.5,post-graduation,"dev<5%; holders rising",dog,trending,"50@2x/25@5x/25@10x",2x,tp_ladder_tranche1,+1.0,1.2,28.8,"example row - delete before use"

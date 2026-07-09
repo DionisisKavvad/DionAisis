@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Go-Live — Φάσεις &amp; Πρόοδος</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2128; --ink:#e6edf3; --muted:#9da7b3;
+    --line:#2d333b; --accent:#7c9cff; --green:#3fb950; --amber:#d29922; --red:#f85149;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:920px;margin:0 auto;padding:32px 22px 100px;}
+  nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;margin-bottom:22px;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px}
+  nav a{color:var(--accent);text-decoration:none}
+  nav a:hover{text-decoration:underline}
+  h1{font-size:28px;margin:0 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 20px}
+  .track{position:relative;margin:30px 0}
+  .phase{position:relative;padding-left:52px;margin-bottom:36px}
+  .phase::before{content:'';position:absolute;left:19px;top:44px;bottom:-36px;width:2px;background:var(--line)}
+  .phase:last-child::before{display:none}
+  .badge{position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;
+    border:2px solid var(--line);background:var(--panel2);color:var(--ink)}
+  .badge.done{background:rgba(63,185,80,.15);border-color:var(--green);color:#5fd06f}
+  .badge.progress{background:rgba(210,153,34,.15);border-color:var(--amber);color:#e3b341}
+  .badge.pending{background:var(--panel2);border-color:var(--line);color:var(--muted)}
+  .phase h2{font-size:20px;margin:2px 0 4px}
+  .status-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.5px;padding:2px 9px;border-radius:6px;margin-left:8px;vertical-align:middle}
+  .st-done{background:rgba(63,185,80,.15);color:#5fd06f;border:1px solid rgba(63,185,80,.4)}
+  .st-progress{background:rgba(210,153,34,.15);color:#e3b341;border:1px solid rgba(210,153,34,.4)}
+  .st-pending{background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+  .phase p.desc{color:#c4ccd6;font-size:14.5px;margin:8px 0 14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:10px 0}
+  .card h4{margin:0 0 8px;font-size:13.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--accent)}
+  .steplist{list-style:none;padding:0;margin:0}
+  .steplist>li{padding:8px 0;font-size:14.5px;border-bottom:1px dashed var(--line)}
+  .steplist>li:last-child{border-bottom:none}
+  .steplist li .row{display:flex;gap:10px;align-items:flex-start}
+  .steplist li .chk{flex:0 0 18px;margin-top:2px}
+  .steplist li.ok .chk{color:var(--green)}
+  .steplist li.todo .chk{color:var(--muted)}
+  details{margin-top:6px}
+  details summary{cursor:pointer;color:var(--accent);font-size:13px;font-weight:600;
+    list-style:none;padding:2px 0}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:'▸ ';color:var(--accent)}
+  details[open] summary::before{content:'▾ '}
+  details .instr{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;padding:10px 14px;margin:8px 0 4px;font-size:14px}
+  details .instr ol{margin:4px 0;padding-left:20px}
+  details .instr li{margin:5px 0}
+  details .instr p.note{color:var(--muted);font-size:12.5px;margin:8px 0 0;font-style:italic}
+  .docs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .docs a{background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:5px 10px;font-size:12.5px;color:var(--accent);text-decoration:none}
+  .docs a:hover{border-color:var(--accent)}
+  code{background:#0b0f14;border:1px solid var(--line);border-radius:5px;padding:1px 6px;
+    font:13px "SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#a5d6ff}
+  .callout{border-radius:10px;padding:12px 14px;margin:14px 0;border:1px solid;font-size:14px}
+  .warn{background:rgba(248,81,73,.08);border-color:rgba(248,81,73,.4)}
+  .ok{background:rgba(63,185,80,.08);border-color:rgba(63,185,80,.4)}
+  .note{background:rgba(210,153,34,.08);border-color:rgba(210,153,34,.4)}
+  footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <a href="2026-06-29-trading-research-hub.html">📊 Hub</a>
+  <span style="color:var(--line)">|</span>
+  <span style="color:var(--ink);font-weight:600">🗺️ Φάσεις Go-Live</span>
+</nav>
+
+<h1>🗺️ Crypto Go-Live — Φάσεις &amp; τι έχουμε κάνει ήδη</h1>
+<p class="sub">4 φάσεις. Κάθε βήμα έχει ▸ αναλυτικές οδηγίες από κάτω — άνοιξέ το για να δεις ακριβώς τι να κάνεις.</p>
+
+<div class="callout ok">
+<strong>Πού είμαστε συνολικά:</strong> όλο το <strong>research/χαρτιά</strong> έχει γίνει. Ό,τι μένει είναι πρακτικά βήματα με τα δικά σου accounts — τα βήματα παρακάτω είναι ακριβώς αυτά.
+</div>
+
+<div class="track">
+
+  <!-- PHASE 0 -->
+  <div class="phase">
+    <div class="badge done">✓</div>
+    <h2>Φάση 0 — Προετοιμασία &amp; θεμέλιο <span class="status-tag st-done">Research: done</span></h2>
+    <p class="desc">Πριν κινηθεί έστω ένα ευρώ: το σύστημα trading, η ασφάλεια, και το αν επιτρέπεται νομικά.</p>
+
+    <div class="card">
+      <h4>Τι καλύψαμε ήδη</h4>
+      <ul class="steplist">
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Frame συνέντευξη: στόχος, τρέχον state (-10%), κενά γνώσης, edge thesis</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Trading system spec: sizing, entry filters, exit ladder, journal (D3)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Security checklist: cold/hot wallet split, seed backup, revoke approvals (D5)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Νομιμότητα Ελλάδας: <strong>GO</strong> — crypto trading νόμιμο, όχι τζόγος (C1)</span></div></li>
+      </ul>
+      <div class="docs">
+        <a href="2026-06-25-crypto-D3-trading-system-spec.md">D3 · System Spec</a>
+        <a href="2026-06-25-crypto-D5-security-checklist.md">D5 · Security</a>
+        <a href="2026-07-01-crypto-greece-C1-legality-go-no-go.md">C1 · Go/No-Go</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>Τι μένει σε σένα — με αναλυτικές οδηγίες</h4>
+      <ul class="steplist">
+
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Επίλεξε CEX: Crypto.com (πρώτο) με Kraken ως fallback</strong> — <span class="status-tag st-done">Έρευνα done</span> (Uphold αποκλείστηκε — αποτυγχάνει MiCA σήμερα)</span></div>
+          <details open>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <p><strong>Έγινε ξεχωριστή έρευνα &amp; σύγκριση</strong> ακριβώς σε αυτό το ερώτημα (MiCA compliance + πραγματική withdrawal policy) για Kraken, Uphold, Crypto.com — βλ. πλήρες doc παρακάτω. Περίληψη:</p>
+              <ul style="margin:6px 0">
+                <li><strong style="color:var(--red)">Uphold: εκτός.</strong> Αποτυγχάνει MiCA σήμερα (αίτηση "under active review", δικές του "temporary restrictions" στο deadline 1/7/2026). Μην το ξαναχρησιμοποιήσεις για αυτό.</li>
+                <li><strong>Kraken</strong> και <strong>Crypto.com</strong> περνάνε καθαρά MiCA (Ireland/CBI vs Malta/MFSA), αλλά κανένα δεν έχει καθαρό ιστορικό freezes.</li>
+                <li><strong>Crypto.com</strong> έχει τεκμηριωμένη περίπτωση freeze <em>ακριβώς</em> μετά από αλληλεπίδραση με self-custody wallet (το δικό σου pattern) — yellow flag, όχι deal-breaker.</li>
+              </ul>
+              <p><strong>Βήματα (τον λογαριασμό Crypto.com που ήδη έχεις):</strong></p>
+              <ol>
+                <li style="color:#5fd06f">✓ <strong>Login + SOL support επιβεβαιώθηκε.</strong> <em>(ολοκληρώθηκε)</em></li>
+                <li style="color:#5fd06f">✓ <strong>Test #1 — SOL round-trip Phantom→Crypto.com→Phantom:</strong> έγινε επιτυχώς. <em>(ολοκληρώθηκε)</em></li>
+                <li style="color:#e3b341">⏳ <strong>Test #2 — μικρή ανάληψη SEPA προς Revolut (~€20-30):</strong> <em>επόμενο βήμα, οδηγίες δόθηκαν στο chat</em></li>
+                <li><strong>Αν κολλήσει/καθυστερήσει &gt;3-5 εργάσιμες</strong> ή μπει σε αδιευκρίνιστο "review": σταμάτα, μην περιμένεις. Άνοιξε <strong>Kraken</strong> (Payward Europe Solutions Ltd, Ireland CASP — πιο ισχυρό ανεξάρτητα επιβεβαιωμένο MiCA status) ως fallback.</li>
+                <li>Ποτέ μην πληρώσεις "processing/verification fee" για να ξεμπλοκάρει ανάληψη — γνωστό μοτίβο απάτης πάνω σε νόμιμα holds.</li>
+              </ol>
+              <p class="note">Πλήρες comparison table + per-platform verdict + πηγές στο doc παρακάτω.</p>
+            </div>
+          </details>
+          <div class="docs"><a href="2026-07-01-crypto-cex-mica-comparison-kraken-uphold-cryptocom.md">📄 Πλήρες comparison: Kraken vs Uphold vs Crypto.com</a></div>
+        </li>
+
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Έλεγχος αν το Revolut σου κάνει SOL withdrawal</strong> (feature-gating ανά χώρα)</span></div>
+          <details>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <ol>
+                <li>Άνοιξε την εφαρμογή Revolut → <strong>Crypto</strong> tab.</li>
+                <li>Αν δεν έχεις ήδη SOL, αγόρασε ένα πολύ μικρό ποσό (π.χ. $5) για να ξεκλειδώσεις το asset screen.</li>
+                <li>Άνοιξε το asset <strong>SOL</strong> → ψάξε για κουμπί <strong>«Send»</strong> ή <strong>«Withdraw to external wallet»</strong> (όχι μόνο «Buy/Sell/Exchange»).</li>
+                <li><strong>Αν το βρεις:</strong> έχεις τη δυνατότητα να στέλνεις SOL απευθείας σε Solana address (π.χ. Phantom) χωρίς ενδιάμεσο CEX. Πήγαινε στο playbook C2 §"Option A" για τα ακριβή βήματα αποστολής.</li>
+                <li><strong>Αν ΔΕΝ το βρεις</strong> (μόνο trade-only, όχι withdraw): χρησιμοποίησε τη διαδρομή Kraken (§KYC παραπάνω + C2 §"Option B").</li>
+              </ol>
+              <p class="note">Αυτό ελέγχεται μόνο μέσα στη δική σου εφαρμογή — δεν μπορώ να το επιβεβαιώσω εκ των προτέρων. Πες μου τι βλέπεις και προσαρμόζουμε τη διαδρομή.</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Backup του Phantom seed phrase offline</strong> (αν δεν το έχεις κάνει ήδη)</span></div>
+          <details>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <ol>
+                <li>Άνοιξε Phantom → <strong>Settings</strong> (γρανάζι) → <strong>Security &amp; Privacy</strong>.</li>
+                <li>Επίλεξε <strong>«Show Secret Recovery Phrase»</strong> (θα ζητήσει το password σου).</li>
+                <li>Γράψε τις 12 λέξεις <strong>με το χέρι σε χαρτί</strong> (ή καλύτερα, σε μεταλλική πλάκα ~$20-30 αν θες μονιμότητα).</li>
+                <li><strong>ΠΟΤΕ</strong> screenshot, φωτογραφία, cloud, Notion, password manager, email προς τον εαυτό σου.</li>
+                <li>Φύλαξέ το σε ασφαλές μέρος (π.χ. χρηματοκιβώτιο). Ιδανικά 2 αντίγραφα σε 2 διαφορετικά μέρη.</li>
+                <li>Δοκίμασε (προαιρετικά, αν έχεις δεύτερη συσκευή) ότι το recovery phrase όντως δουλεύει πριν βασιστείς σε αυτό.</li>
+              </ol>
+              <p class="note">Βλ. πλήρες αναλυτικό στο D5 §2 (Seed phrase hygiene).</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Trade-log αρχείο</strong> — έτοιμο template</span></div>
+          <details>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <p>Έφτιαξα το template — κατέβασέ το και άνοιξέ το σε Excel/Google Sheets/Numbers:</p>
+              <ol>
+                <li>Κατέβασε: <code>2026-07-01-crypto-trade-log-template.csv</code></li>
+                <li>Άνοιξέ το σε spreadsheet app. Στήλες: token, entry mcap/liquidity, μέγεθος θέσης, entry lane, narrative, exits/multiples, <strong>R-multiple</strong>, fees, καθαρό PnL, σημειώσεις.</li>
+                <li>Διάγραψε το example row πριν ξεκινήσεις.</li>
+                <li>Συμπλήρωσε <strong>μετά από κάθε trade</strong> — όχι αναδρομικά στο τέλος της βδομάδας (θα ξεχάσεις λεπτομέρειες).</li>
+              </ol>
+              <p class="note">Πλήρης εξήγηση κάθε στήλης στο D3 §7 (Trade Journal).</p>
+            </div>
+          </details>
+          <div class="docs"><a href="2026-07-01-crypto-trade-log-template.csv">📄 Κατέβασε το template</a></div>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase">
+    <div class="badge progress">2</div>
+    <h2>Φάση 1 — Deposit (money IN) <span class="status-tag st-progress">Playbook: done · Εκτέλεση: άγνωστη</span></h2>
+    <p class="desc">Από ευρώ στο Revolut μέχρι SOL στο Phantom σου. Πιθανώς ήδη το έχεις κάνει αφού ήδη κάνεις trades στο Axiom.</p>
+
+    <div class="card">
+      <h4>Τι καλύψαμε ήδη</h4>
+      <ul class="steplist">
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Πλήρες playbook: Revolut-only vs Revolut→Kraken→Phantom, με σύγκριση κόστους (C2)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Φθηνότερη διαδρομή εντοπισμένη: Kraken Pro limit order (~$5-8 σε $2k) vs Revolut-only (~$30-60)</span></div></li>
+      </ul>
+      <div class="docs"><a href="2026-07-01-crypto-greece-C2-deposit-playbook.md">C2 · Deposit Playbook</a></div>
+    </div>
+
+    <div class="callout note" style="margin:10px 0">
+      <strong>Ενημέρωση:</strong> μετά τη σύγκριση CEX (βλ. Φάση 0), το <strong>Crypto.com</strong> (λογαριασμός που ήδη έχεις) είναι η πρώτη επιλογή αντί για fresh Kraken — τα βήματα παρακάτω ισχύουν το ίδιο, απλά αντικατέστησε "Kraken" με "Crypto.com" (ή Kraken αν το Crypto.com αποτύχει στο test).
+    </div>
+    <div class="card">
+      <h4>Το βήμα-βήμα (αναλυτικά)</h4>
+      <ul class="steplist">
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Route B (φθηνότερο, προτείνεται):</strong> Revolut → CEX (Crypto.com/Kraken) → Phantom</span></div>
+          <details>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <ol>
+                <li>Στο Revolut, κράτα το ποσό σε <strong>EUR</strong> (όχι σε κάποιο crypto ήδη).</li>
+                <li>Στο Kraken (μετά το KYC): <strong>Funding → Deposit → EUR (SEPA)</strong>. Θα σου δώσει IBAN. Κάνε <strong>SEPA transfer</strong> από το Revolut σε αυτό το IBAN. Δωρεάν, φτάνει σε λεπτά έως ~1 εργάσιμη.</li>
+                <li>Στο Kraken Pro: <strong>Trade → SOL/EUR → LIMIT order</strong> (όχι market — το limit πληρώνει 0.25% maker αντί για taker fee). Βάλε τιμή κοντά στην τρέχουσα.</li>
+                <li>Μόλις γεμίσει η παραγγελία: <strong>Funding → Withdraw → SOL</strong>. Επίλεξε δίκτυο <strong>Solana</strong> (ΟΧΙ Ethereum/άλλο chain).</li>
+                <li>Paste τη <strong>Phantom receive address</strong> σου (Solana address).</li>
+                <li><strong>Πρώτη φορά:</strong> στείλε ~$10-20 test πρώτα. Επιβεβαίωσε ότι έφτασε στο Phantom, ΜΕΤΑ στείλε το υπόλοιπο.</li>
+                <li>Επιβεβαίωσε τα πρώτα/τελευταία 6 χαρακτήρες της address πριν επιβεβαιώσεις κάθε φορά.</li>
+              </ol>
+              <p class="note">Πλήρες detail (fees, timing, εναλλακτικά) στο C2.</p>
+            </div>
+          </details>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4>Ερώτηση για σένα</h4>
+      <p style="margin:0;font-size:14.5px">Πώς έβαλες μέχρι τώρα κεφάλαιο στο Phantom (πριν διαβάσεις το παραπάνω); Αν ήταν διαφορετική διαδρομή, πες μου να δούμε αν αξίζει να αλλάξεις σε αυτή για το επόμενο top-up.</p>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="badge progress">3</div>
+    <h2>Φάση 2 — Trading (Axiom) <span class="status-tag st-progress">Ήδη ενεργό</span></h2>
+    <p class="desc">Εδώ είσαι ήδη — 2-3 μήνες trading, -10%. Το research μας έδωσε το σύστημα για να το φτιάξουμε.</p>
+    <div class="card">
+      <h4>Τι καλύψαμε ήδη</h4>
+      <ul class="steplist">
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Πλήρες σύστημα: sizing, NO-gate entry, exit ladder, anti-tilt (D3)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Εργαλεία: $0 stack — Kolscan, Cielo, RugCheck, Bubblemaps (D2)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>3μηνο curriculum με checkpoints (D1)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Synthetic network / wallet vetting (D4)</span></div></li>
+      </ul>
+      <div class="docs">
+        <a href="2026-06-25-crypto-D3-trading-system-spec.md">D3</a>
+        <a href="2026-06-25-crypto-D2-tooling-infrastructure-map.md">D2</a>
+        <a href="2026-06-25-crypto-D1-curriculum-roadmap.md">D1</a>
+        <a href="2026-06-25-crypto-D4-network-access-map.md">D4</a>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Τι μένει σε σένα</h4>
+      <ul class="steplist">
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Εφαρμογή του v0.1 stack</strong> (αν δεν το έχεις ξεκινήσει ήδη)</span></div>
+          <details>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <ol>
+                <li><strong>Kolscan</strong> (kolscan.io, δωρεάν) → βρες 8-15 wallets με καλό realized PnL.</li>
+                <li><strong>Cielo Finance</strong> (δωρεάν 10 wallets) → φόρτωσε τα εκεί, σύνδεσε Telegram για ειδοποιήσεις.</li>
+                <li>Σε κάθε ειδοποίηση: <strong>RugCheck.xyz</strong> (30 δευτ., δωρεάν) → NO-gate έλεγχος.</li>
+                <li><strong>Bubblemaps</strong> (δωρεάν, top-150 holders) → cluster check στους επιζώντες.</li>
+                <li>Αν περάσει: μπες στο Axiom με το sizing/exit ladder του D3, και <strong>κατέγραψε αμέσως</strong> στο trade-log.</li>
+              </ol>
+              <p class="note">Πλήρες βήμα-βήμα με links στο D2.</p>
+            </div>
+          </details>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase">
+    <div class="badge pending">4</div>
+    <h2>Φάση 3 — Withdrawal (money OUT) <span class="status-tag st-done">Playbook: done</span> <span class="status-tag st-pending">Εκτέλεση: δεν έχει γίνει</span></h2>
+    <p class="desc">Το πιο κρίσιμο κομμάτι. Πλήρες playbook + φορολογικό έτοιμα — καμία πραγματική ανάληψη δεν έχει γίνει ακόμα.</p>
+
+    <div class="card">
+      <h4>Τι καλύψαμε ήδη</h4>
+      <ul class="steplist">
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Πλήρες withdrawal playbook: consolidate → Kraken → EUR → SEPA (C3)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>AML taint risk εξηγημένο (πότε «κολλάνε» τα λεφτά, πώς το αποφεύγεις)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Πλήρες φορολογικό: E1 δήλωση, 15% CGT (εκκρεμές), όχι μπλοκάκι (C4)</span></div></li>
+        <li class="ok"><div class="row"><span class="chk">✓</span><span>Accountant brief έτοιμο για αποστολή (email + 12 ερωτήσεις)</span></div></li>
+      </ul>
+      <div class="docs">
+        <a href="2026-07-01-crypto-greece-C3-withdrawal-playbook.md">C3 · Withdrawal</a>
+        <a href="2026-07-01-crypto-greece-C4-greek-tax-declaration.md">C4 · Φόρος</a>
+        <a href="2026-07-01-accountant-brief-crypto-greece.md">📧 Accountant Brief</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>Τι μένει — με αναλυτικές οδηγίες</h4>
+      <ul class="steplist">
+
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Στείλε το accountant brief</strong> σε λογιστή — ΠΡΙΝ την πρώτη ανάληψη</span></div>
+          <details>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <ol>
+                <li>Άνοιξε το αρχείο <code>2026-07-01-accountant-brief-crypto-greece.md</code>.</li>
+                <li>Copy-paste το έτοιμο email (πάνω-πάνω στο αρχείο) σε νέο email προς λογιστή που ξέρει crypto (αν δεν έχεις ήδη — ζήτα σύσταση ή ψάξε «λογιστής crypto Ελλάδα»).</li>
+                <li>Επισύναψε ή παράθεσε τις 12 ερωτήσεις (μέσα στο ίδιο αρχείο).</li>
+                <li>Κάνε αυτό <strong>πριν</strong> βγάλεις οποιοδήποτε πραγματικό ποσό, ώστε να ξέρεις πώς θα δηλωθεί πριν χρειαστεί να το δηλώσεις.</li>
+              </ol>
+            </div>
+          </details>
+        </li>
+
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Test withdrawal μικρού ποσού</strong> (~$10-20) end-to-end</span></div>
+          <details>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <ol>
+                <li>Στο Phantom/Axiom: swap ένα μικρό ποσό memecoin σε <strong>καθαρό SOL ή USDC</strong> (όχι απευθείας proceeds).</li>
+                <li>Στείλε το στο Kraken deposit address σου, δίκτυο <strong>Solana</strong>.</li>
+                <li>Στο Kraken: πούλα σε <strong>EUR</strong> (market ή limit).</li>
+                <li><strong>SEPA withdraw</strong> προς Revolut/τράπεζα.</li>
+                <li>Επιβεβαίωσε ότι έφτασε καθαρά, χωρίς καθυστέρηση/hold. Κράτα το <strong>tx hash</strong> κάθε βήματος.</li>
+              </ol>
+              <p class="note">Πλήρες Part 1 (βήμα-βήμα) + Part 2 (friction/AML) στο C3.</p>
+            </div>
+          </details>
+        </li>
+
+        <li class="todo">
+          <div class="row"><span class="chk">○</span><span><strong>Πρώτη πραγματική ανάληψη</strong> όταν υπάρχει κέρδος να βγει</span></div>
+          <details>
+            <summary>Αναλυτικά →</summary>
+            <div class="instr">
+              <ol>
+                <li>Ίδια διαδρομή με το test, αλλά σε <strong>tranches</strong> (μερικές εκατοντάδες ως ~1.000€ τη φορά) — όχι lump ποσό μετά από win.</li>
+                <li>Κράτα <strong>tx hashes + provenance</strong> για κάθε ανάληψη (source-of-funds αν σε ρωτήσουν).</li>
+                <li>Ενημέρωσε το <strong>cost-basis file</strong> σου (μέρος του trade-log) με το EUR-out.</li>
+                <li>Αν κάτι «κολλήσει» (hold/freeze): δες C3 §Part 4 "What To Do If Frozen" — μην πανικοβληθείς, μην στείλεις rapid μικρά ποσά (φαίνεται σαν structuring).</li>
+              </ol>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<div class="callout warn">
+<strong>Σημείωση:</strong> δεν είναι νομική/φοροτεχνική συμβουλή, και οι οδηγίες UI (π.χ. ονόματα κουμπιών σε Kraken/Revolut) βασίζονται σε τυπική διαδικασία — μπορεί να αλλάξουν. Αν θες, μπορώ να σε καθοδηγήσω <strong>live μέσω browser</strong> την ώρα που τα κάνεις, βήμα-βήμα.
+</div>
+
+<footer>
+  Deliverables: D1-D5 (σύστημα &amp; εργαλεία) · C1-C4 (νομικά/φόρος Ελλάδας) · trade-log template · <code>reports/</code>. · Ενημ. 1 Ιουλ 2026.
+</footer>
+
+</div>
+</body>
+</html>
